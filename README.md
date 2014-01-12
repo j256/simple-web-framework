@@ -1,4 +1,0 @@
-simplewebframework
-==================
-
-Simple web framework.
