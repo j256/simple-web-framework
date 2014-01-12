@@ -1,0 +1,8 @@
+- maybe move the freemarker template manager
+- maybe move the static content handler here
+- handle the @BeanParam available in the jsr2.X release
+
+----------------
+
+- maybe some very simple view displayer that implements apache include or that just does ${...}
+	- tests for template change every X millis
