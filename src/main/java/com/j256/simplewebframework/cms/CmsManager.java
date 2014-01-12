@@ -12,34 +12,37 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.j256.simplejmx.common.JmxAttributeField;
+import com.j256.simplejmx.common.JmxAttributeMethod;
+import com.j256.simplejmx.common.JmxOperation;
+import com.j256.simplejmx.common.JmxResource;
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
 import com.j256.simplewebframework.util.FileUtils;
 import com.j256.simplewebframework.util.IoUtils;
-import com.j256.simplewebframework.util.StringUtils;
 
 /**
  * CMS version downloader and manager.
  * 
  * @author graywatson
  */
-// @JmxResource(domainName = "j256.dstamp", folderNames = { "web" }, description = "CMS downloader and manager")
+@JmxResource(domainName = "j256.simpleweb", folderNames = { "web" }, description = "CMS downloader and manager")
 public class CmsManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(CmsManager.class);
 
-	private ContentZipSource contentZipSource;
-	// @JmxAttributeField(description = "local directory we write the CMS stuff too")
+	private ContentSource contentZipSource;
+	@JmxAttributeField(description = "local directory we write the CMS stuff too")
 	private File localDirectory;
-	// @JmxAttributeField(description = "CMS path currently in service")
+	@JmxAttributeField(description = "CMS path currently in service")
 	private String livePath;
 
 	private List<RevisionInfo> lastCmsUpateRevisions;
 	@SuppressWarnings("unused")
-	// @JmxAttributeField(description = "live revision CMS directory")
+	@JmxAttributeField(description = "live revision CMS directory")
 	private File liveRevisionDir;
 
-	public void setContentZipSource(ContentZipSource contentZipSource) {
+	public void setContentZipSource(ContentSource contentZipSource) {
 		this.contentZipSource = contentZipSource;
 	}
 
@@ -55,7 +58,7 @@ public class CmsManager {
 		this.livePath = livePath;
 	}
 
-	// @JmxAttributeMethod(description = "Revisions last updated")
+	@JmxAttributeMethod(description = "Revisions last updated")
 	public String[] getLastCmsUpateRevisions() {
 		List<RevisionInfo> lastUpdate = lastCmsUpateRevisions;
 		if (lastUpdate == null) {
@@ -72,7 +75,7 @@ public class CmsManager {
 	/**
 	 * Update our CMS directory to the latest version.
 	 */
-	// @JmxAttributeOperation(description = "Update the CMS release")
+	@JmxOperation(description = "Update the CMS release")
 	public void updateCms() throws IOException {
 		List<RevisionInfo> revisionInfos = readRevisionInfos();
 		lastCmsUpateRevisions = revisionInfos;
@@ -83,7 +86,7 @@ public class CmsManager {
 
 		RevisionInfo liveRevision = null;
 		for (RevisionInfo info : revisionInfos) {
-			if (info.live) {
+			if (info.isLive()) {
 				if (liveRevision != null) {
 					logAndThrow("Duplicate live CMS revisions are marked as line from config file", null);
 				}
@@ -119,7 +122,7 @@ public class CmsManager {
 				downloaded = true;
 			}
 
-			if (info.live) {
+			if (info.isLive()) {
 				newLiveRevisionDir = revisionDir;
 			}
 		}
@@ -222,8 +225,7 @@ public class CmsManager {
 	}
 
 	private boolean downloadVersion(RevisionInfo info, File downloadDir) throws IOException {
-		// String cmsZipPath = s3CmsPrefix + "/" + info.branch + "/" + info.revision + ".zip";
-		InputStream is = contentZipSource.getRevisionInputStream(info.revision);
+		InputStream is = contentZipSource.getContentZipInputStream(info.getBranch(), info.getRevision());
 		if (is == null) {
 			logger.warn("Could not find cms revision {}", info);
 			return false;
@@ -250,7 +252,7 @@ public class CmsManager {
 					readInFile(zipStream, entry, file);
 				}
 			}
-			logger.info("downloaded revision {} to {}", info.revision, downloadDir);
+			logger.info("downloaded revision {} to {}", info.getRevision(), downloadDir);
 			return true;
 		} finally {
 			IoUtils.closeQuietly(zipStream);
@@ -345,62 +347,5 @@ public class CmsManager {
 	private void logAndThrow(String msg, Exception e) throws IOException {
 		logger.error(msg, e);
 		throw new IOException(msg, e);
-	}
-
-	/**
-	 * Class that holds information our revision config file.
-	 */
-	private static class RevisionInfo {
-
-		final boolean live;
-		final String branch;
-		final int revision;
-
-		private RevisionInfo(boolean live, String branch, int revision) {
-			this.live = live;
-			this.branch = branch;
-			this.revision = revision;
-		}
-
-		public static RevisionInfo createRevisionInfo(String line) {
-			String[] parts = StringUtils.split(line, '\t');
-			if (parts.length < 3) {
-				logger.error("CMS config file line invalid: " + line);
-				return null;
-			}
-
-			boolean live = Boolean.parseBoolean(parts[0]);
-			String branch = parts[1];
-			if (branch == null || branch.length() == 0) {
-				logger.error("CMS config file line invalid branch: " + line);
-				return null;
-			}
-			int revision;
-			try {
-				revision = Integer.parseInt(parts[2]);
-			} catch (NumberFormatException e) {
-				logger.error("CMS config file line invalid revision: " + line);
-				return null;
-			}
-
-			return new RevisionInfo(live, branch, revision);
-		}
-
-		public File getBranchDir(File localDirectory) {
-			return new File(localDirectory, branch);
-		}
-
-		public File getRevisionDir(File localDirectory) {
-			return new File(getBranchDir(localDirectory), Integer.toString(revision));
-		}
-
-		public File getRevisionDirTmp(File localDirectory) {
-			return new File(getBranchDir(localDirectory), Integer.toString(revision) + ".t");
-		}
-
-		@Override
-		public String toString() {
-			return "branch " + branch + ", rev " + revision + ", live " + live;
-		}
 	}
 }

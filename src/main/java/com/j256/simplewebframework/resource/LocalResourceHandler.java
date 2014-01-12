@@ -11,6 +11,8 @@ import org.eclipse.jetty.http.HttpMethods;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+import com.j256.simplejmx.common.JmxAttributeField;
+import com.j256.simplejmx.common.JmxResource;
 import com.j256.simplewebframework.displayer.FileResultDisplayer.FileInfo;
 import com.j256.simplewebframework.displayer.ResultDisplayer;
 
@@ -19,26 +21,26 @@ import com.j256.simplewebframework.displayer.ResultDisplayer;
  * 
  * @author gwatson
  */
-// @JmxResource(domainName = "j256.dstamp", folderNames = { "web" }, description = "Resource handler for disk files")
+@JmxResource(domainName = "j256.simpleweb", folderNames = { "web" }, description = "Resource handler for disk files")
 public class LocalResourceHandler extends AbstractHandler {
 
 	private Map<String, ResultDisplayer> fileExtensionDisplayers = new HashMap<String, ResultDisplayer>();
 	private ResultDisplayer defaultDisplayer;
 
 	@SuppressWarnings("unused")
-	// @JmxAttributeField(description = "Number of head requests")
+	@JmxAttributeField(description = "Number of head requests")
 	private int headRequestsCount = 0;
 	@SuppressWarnings("unused")
-	// @JmxAttributeField(description = "Number of not-modified responses")
+	@JmxAttributeField(description = "Number of not-modified responses")
 	private int notModifiedResponsesCount = 0;
 	@SuppressWarnings("unused")
-	// @JmxAttributeField(description = "Number of files requested")
+	@JmxAttributeField(description = "Number of files requested")
 	private int invalidRequestsCount = 0;
 	@SuppressWarnings("unused")
-	// @JmxAttributeField(description = "Number of invalid paths")
+	@JmxAttributeField(description = "Number of invalid paths")
 	private int invalidPathsCount = 0;
 	@SuppressWarnings("unused")
-	// @JmxAttributeField(description = "Number of unknown paths")
+	@JmxAttributeField(description = "Number of unknown paths")
 	private int unknownPathsCount = 0;
 	private FileLocator fileLocator;
 

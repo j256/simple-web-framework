@@ -50,7 +50,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 		FileInfo fileInfo;
 		if (result instanceof ModelView) {
 			modelView = (ModelView) result;
-			fileInfo = fileLocator.findFile(modelView.view);
+			fileInfo = fileLocator.findFile(modelView.getView());
 			if (fileInfo == null) {
 				return false;
 			}
@@ -60,7 +60,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 		} else {
 			throw new IllegalArgumentException("Cannot render the result of type: " + result.getClass().getSimpleName());
 		}
-		render(fileInfo, modelView.model, request, response, response.getWriter());
+		render(fileInfo, modelView.getModel(), request, response, response.getWriter());
 		return true;
 	}
 
@@ -105,32 +105,5 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 
 	public void setFileLocator(FileLocator fileLocator) {
 		this.fileLocator = fileLocator;
-	}
-
-	/**
-	 * Model and view to be returned by web-service.
-	 */
-	public static class ModelView {
-
-		private final Map<String, Object> model;
-		private final String view;
-
-		public ModelView(String view) {
-			this.model = new HashMap<String, Object>();
-			this.view = view;
-		}
-
-		public ModelView(Map<String, Object> model, String view) {
-			this.model = model;
-			this.view = view;
-		}
-
-		public Map<String, Object> getModel() {
-			return model;
-		}
-
-		public String getView() {
-			return view;
-		}
 	}
 }

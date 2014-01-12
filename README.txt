@@ -1,1 +1,1 @@
-Little Java web framework I wrote up.
+Little Java Jetty web framework which uses the JSR annotations.
