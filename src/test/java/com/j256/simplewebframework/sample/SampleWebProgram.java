@@ -26,11 +26,6 @@ public class SampleWebProgram {
 	private static final int DEFAULT_WEB_PORT = 8080;
 
 	public static void main(String[] args) throws Exception {
-		new SampleWebProgram().doMain();
-	}
-
-	private void doMain() throws Exception {
-
 		// create get jetty server
 		Server server = new Server();
 		// create the connector which receives HTTPD connections
@@ -59,11 +54,11 @@ public class SampleWebProgram {
 	}
 
 	/**
-	 * Small web service which presents a simple form to the user and displays the results.
+	 * Small web service which presents a simple form to the user and displays the results if any.
 	 */
 	@WebService
 	@Produces({ "text/html" })
-	protected class OurService {
+	protected static class OurService {
 
 		@Path("/")
 		@GET

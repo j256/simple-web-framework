@@ -105,20 +105,21 @@ public class ServiceHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Register a web-service with the service handler.
+	 * Register a web-service with the service handler. Services can also be injected on the class using
+	 * {@link #setWebServices(Object[])}.
 	 */
 	public void registerWebService(Object webService) {
 		if (!webService.getClass().isAnnotationPresent(WebService.class)) {
 			throw new IllegalArgumentException("Expected @WebService annotation on class "
 					+ webService.getClass().getSimpleName());
 		}
-	
+
 		String classPathPrefix = "";
 		Path servicePath = webService.getClass().getAnnotation(Path.class);
 		if (servicePath != null) {
 			classPathPrefix = servicePath.value();
 		}
-	
+
 		Produces produces = webService.getClass().getAnnotation(Produces.class);
 		String webServiceContentType = null;
 		if (produces != null) {
@@ -127,14 +128,14 @@ public class ServiceHandler extends AbstractHandler {
 				webServiceContentType = contentTypes[0];
 			}
 		}
-	
+
 		// now process the class' methods all the way up the object chain
 		for (Class<?> clazz = webService.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
-	
+
 			// process the methods on the class looking for @WebMethod
 			processMethods(webService, classPathPrefix, webServiceContentType, clazz);
-	
-			// process that classes interfaces as well
+
+			// process the class interfaces as well
 			for (Class<?> interfaceClass : clazz.getInterfaces()) {
 				processMethods(webService, classPathPrefix, webServiceContentType, interfaceClass);
 			}
