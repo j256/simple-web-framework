@@ -1,6 +1,5 @@
 package com.j256.simplewebframework.handler;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,7 +20,8 @@ import org.eclipse.jetty.server.Request;
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
 import com.j256.simplewebframework.params.ParamInfo;
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.ResponseUtils;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
@@ -152,14 +152,12 @@ public class MethodWrapper {
 	/**
 	 * Process our request and return the result object returned by the web-service method.
 	 */
-	public Object processRequest(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	public Object processRequest(Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			return doProcessRequest(baseRequest, request, response);
 		} catch (Exception e) {
 			if (!response.isCommitted()) {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "unable to process request");
-				IoUtils.closeQuietly(response.getOutputStream());
+				ResponseUtils.sendError(response, HttpErrorCode.INTERNAL_SERVER_ERROR, "unable to process request");
 			}
 			logger.error(e, "Request to method {} for class {} threw", method.getName(), webService.getClass()
 					.getSimpleName());

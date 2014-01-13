@@ -15,6 +15,8 @@ import com.j256.simplejmx.common.JmxAttributeField;
 import com.j256.simplejmx.common.JmxResource;
 import com.j256.simplewebframework.displayer.FileResultDisplayer.FileInfo;
 import com.j256.simplewebframework.displayer.ResultDisplayer;
+import com.j256.simplewebframework.util.ResponseUtils;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 
 /**
  * A special ResourceHandler that finds files locally and returns them as resources.
@@ -56,20 +58,20 @@ public class LocalResourceHandler extends AbstractHandler {
 
 		if (!HttpMethods.GET.equals(servletRequest.getMethod()) && !HttpMethods.HEAD.equals(servletRequest.getMethod())) {
 			invalidRequestsCount++;
-			setErrorResponse(servletResponse, HttpServletResponse.SC_BAD_REQUEST,
-					"Invalid request for local resource, only GET and HEAD is accepted");
+			ResponseUtils.sendError(servletResponse, HttpErrorCode.BAD_REQUEST,
+					"invalid request for local resource, only GET and HEAD is accepted");
 			return;
 		}
 
 		String path = servletRequest.getPathInfo();
 		if (path == null) {
 			invalidPathsCount++;
-			setErrorResponse(servletResponse, HttpServletResponse.SC_NOT_FOUND, "Null path");
+			ResponseUtils.sendError(servletResponse, HttpErrorCode.NOT_FOUND, "null path");
 			return;
 		}
 		if (!path.startsWith("/")) {
 			invalidPathsCount++;
-			setErrorResponse(servletResponse, HttpServletResponse.SC_BAD_REQUEST,
+			ResponseUtils.sendError(servletResponse, HttpErrorCode.BAD_REQUEST,
 					"Invalid request, path doesn't start with /");
 			return;
 		}
@@ -86,14 +88,14 @@ public class LocalResourceHandler extends AbstractHandler {
 		FileInfo fileInfo = fileLocator.findFile(path);
 		if (fileInfo == null) {
 			invalidPathsCount++;
-			setErrorResponse(servletResponse, HttpServletResponse.SC_NOT_FOUND, null);
+			ResponseUtils.sendError(servletResponse, HttpErrorCode.NOT_FOUND);
 			return;
 		}
 
 		String extension = findRequestExtension(fileInfo);
 		if (extension == null) {
 			invalidPathsCount++;
-			setErrorResponse(servletResponse, HttpServletResponse.SC_NOT_FOUND, null);
+			ResponseUtils.sendError(servletResponse, HttpErrorCode.NOT_FOUND, "no file extension");
 			return;
 		}
 
@@ -102,7 +104,7 @@ public class LocalResourceHandler extends AbstractHandler {
 			displayer = defaultDisplayer;
 			if (displayer == null) {
 				invalidPathsCount++;
-				setErrorResponse(servletResponse, HttpServletResponse.SC_NOT_FOUND, null);
+				ResponseUtils.sendError(servletResponse, HttpErrorCode.NOT_FOUND, "unknown file type");
 				return;
 			}
 		}
@@ -138,23 +140,5 @@ public class LocalResourceHandler extends AbstractHandler {
 
 	public void setFileLocator(FileLocator fileLocator) {
 		this.fileLocator = fileLocator;
-	}
-
-	/**
-	 * Here to override to log the response or add extra details.
-	 */
-	protected void setErrorResponse(HttpServletResponse response, int status, String message) {
-		try {
-			if (message == null) {
-				response.setStatus(status);
-			} else {
-				response.sendError(status, message);
-			}
-			// can't use close quietly here
-			response.getOutputStream().close();
-		} catch (IOException e) {
-			// ignored
-			response.setStatus(status);
-		}
 	}
 }

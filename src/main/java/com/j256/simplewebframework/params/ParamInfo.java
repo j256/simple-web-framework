@@ -18,7 +18,8 @@ import javax.ws.rs.core.Context;
 import org.eclipse.jetty.server.Request;
 
 import com.j256.simplewebframework.handler.RequestContext;
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.ResponseUtils;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 
 /**
  * Information about the parameter in terms of where we get it from and how we convert it.
@@ -167,26 +168,24 @@ public class ParamInfo {
 	 * Extract the string value from the request and convert it into a native object according to its source and
 	 * converter information.
 	 */
-	public Object extractValue(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	public Object extractValue(Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			Object value = paramSource.extractValue(baseRequest, request, response, this);
 			if (value != null) {
 				return value;
 			} else if (response.isCommitted()) {
+				// in case the response has already been committed
 				return null;
 			} else if (paramSource.isDefaultValueAllowed()) {
 				return getDefaultValue();
 			} else {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing value for " + this.getWebError());
-				IoUtils.closeQuietly(response.getOutputStream());
+				ResponseUtils.sendError(response, HttpErrorCode.BAD_REQUEST, "missing value for " + this.getWebError());
 				return null;
 			}
 		} catch (Exception e) {
 			if (!response.isCommitted()) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+				ResponseUtils.sendError(response, HttpErrorCode.BAD_REQUEST,
 						"unable to process value for " + this.getWebError() + ": " + e.getMessage());
-				IoUtils.closeQuietly(response.getOutputStream());
 			}
 			return null;
 		}
@@ -196,12 +195,11 @@ public class ParamInfo {
 	 * Convert a string parameter into a native value.
 	 */
 	Object convertString(String value, HttpServletResponse response) throws IOException {
-		if (value == null && !converter.isCanBeNull()) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, this.getWebError() + " cannot take a null value");
-			IoUtils.closeQuietly(response.getOutputStream());
+		if (value == null) {
 			return null;
+		} else {
+			return converter.convertString(value);
 		}
-		return converter.convertString(value);
 	}
 
 	/**

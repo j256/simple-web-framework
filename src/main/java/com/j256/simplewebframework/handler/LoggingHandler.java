@@ -16,9 +16,10 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import com.j256.simplewebframework.handler.RequestContext.HttpErrorCode;
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
+import com.j256.simplewebframework.util.ResponseUtils;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
@@ -47,17 +48,19 @@ public class LoggingHandler extends AbstractHandler {
 	};
 
 	/**
-	 * Send an error back to the response. This delegates to {@see RequestContext#sendError(HttpErrorCode, String)}.
+	 * Send an error back to the response. This delegates to {@see ResponseUtils#sendError(HttpServletResponse,
+	 * HttpErrorCode, String)}.
 	 */
 	public static void sendError(HttpServletResponse response, HttpErrorCode errorCode, String msg) {
-		sendError(response, errorCode.getHttpErrorCode(), msg);
+		ResponseUtils.sendError(response, errorCode, msg);
 	}
 
 	/**
-	 * Send an error back to the response. This delegates to {@see RequestContext#sendError(HttpErrorCode, String)}.
+	 * Send an error back to the response. This delegates to {@see ResponseUtils#sendError(HttpServletResponse,
+	 * HttpErrorCode)}.
 	 */
-	public static void sendError(HttpServletResponse response, int status, String msg) {
-		RequestContext.sendError(response, status, msg);
+	public static void sendError(HttpServletResponse response, HttpErrorCode errorCode) {
+		ResponseUtils.sendError(response, errorCode);
 	}
 
 	/**
