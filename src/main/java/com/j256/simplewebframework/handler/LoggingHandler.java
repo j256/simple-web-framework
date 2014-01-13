@@ -214,10 +214,11 @@ public class LoggingHandler extends AbstractHandler {
 		line.append(SEPARATOR);
 		line.append(request.getProtocol());
 		line.append(SEPARATOR);
-		if (isError)
+		if (isError) {
 			line.append(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		else
+		} else {
 			line.append(((Response) response).getStatus());
+		}
 		line.append(SEPARATOR);
 		appendIfNotEmpty(line, request.getHeader("Referer"));
 		line.append(SEPARATOR);
