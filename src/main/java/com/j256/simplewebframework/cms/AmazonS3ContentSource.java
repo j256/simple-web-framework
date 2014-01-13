@@ -25,7 +25,7 @@ import com.j256.simplewebframework.logger.LoggerFactory;
  * 
  * @author graywatson
  */
-@JmxResource(domainName = "j256.simpleweb", folderNames = { "web" }, description = "CMS downloader and manager")
+@JmxResource(domainName = "j256.simpleweb", description = "CMS downloader and manager")
 public class AmazonS3ContentSource implements ContentSource {
 
 	private static final Logger logger = LoggerFactory.getLogger(AmazonS3ContentSource.class);

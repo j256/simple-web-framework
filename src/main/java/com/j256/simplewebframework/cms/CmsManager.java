@@ -26,7 +26,7 @@ import com.j256.simplewebframework.util.IoUtils;
  * 
  * @author graywatson
  */
-@JmxResource(domainName = "j256.simpleweb", folderNames = { "web" }, description = "CMS downloader and manager")
+@JmxResource(domainName = "j256.simpleweb", description = "CMS downloader and manager")
 public class CmsManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(CmsManager.class);

@@ -23,7 +23,7 @@ import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
  * 
  * @author gwatson
  */
-@JmxResource(domainName = "j256.simpleweb", folderNames = { "web" }, description = "Resource handler for disk files")
+@JmxResource(domainName = "j256.simpleweb", description = "Resource handler for disk files")
 public class LocalResourceHandler extends AbstractHandler {
 
 	private Map<String, ResultDisplayer> fileExtensionDisplayers = new HashMap<String, ResultDisplayer>();
