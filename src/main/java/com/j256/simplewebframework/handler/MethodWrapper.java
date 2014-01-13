@@ -25,7 +25,9 @@ import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
- * Wrapper around a particular method-call.
+ * Wrapper around a particular method-call. The encapsulates a particular method call with the parameter arguments. It
+ * takes care of the the processing of the request with the
+ * {@link #processRequest(Request, HttpServletRequest, HttpServletResponse)} method.
  * 
  * @author graywatson
  */
@@ -35,19 +37,21 @@ public class MethodWrapper {
 
 	private final Object webService;
 	private final Method method;
+	private final boolean returnsVoid;
 
 	private final int numParams;
 	private final ParamInfo[] paramInfos;
 	private final String contentType;
 	private final RequestType[] allowedRequestTypes;
-	private String fullPath;
-	private boolean pathParam;
+	private final String fullPath;
+	private final boolean pathParam;
 
 	public MethodWrapper(Object webService, String defaultContentType, Method method, String handlerPathPrefix,
 			String classPathPrefix) {
 
 		this.webService = webService;
 		this.method = method;
+		this.returnsVoid = (method.getReturnType() == void.class);
 
 		// build our path
 		String methodPath = "";
@@ -56,7 +60,7 @@ public class MethodWrapper {
 			methodPath = path.value();
 		}
 
-		fullPath = handlerPathPrefix + classPathPrefix + methodPath;
+		String fullPath = handlerPathPrefix + classPathPrefix + methodPath;
 		if (fullPath.length() == 0) {
 			throw new IllegalArgumentException("@Path annotation must be specified for method " + method.getName()
 					+ " and/or class " + webService.getClass().getSimpleName());
@@ -83,6 +87,7 @@ public class MethodWrapper {
 
 		// look for an instances of /{...}/ for @PathParam
 		String[] pathParts = null;
+		boolean pathParam = false;
 		if (fullPath.indexOf("/{") >= 0) {
 			pathParts = StringUtils.split(fullPath, '/');
 			StringBuilder sb = new StringBuilder();
@@ -97,6 +102,8 @@ public class MethodWrapper {
 			}
 			fullPath = sb.toString();
 		}
+		this.pathParam = pathParam;
+		this.fullPath = fullPath;
 
 		this.numParams = types.length;
 		this.paramInfos = new ParamInfo[this.numParams];
@@ -139,6 +146,10 @@ public class MethodWrapper {
 			}
 		}
 		return false;
+	}
+
+	public boolean isReturnsVoid() {
+		return returnsVoid;
 	}
 
 	public String getFullPath() {

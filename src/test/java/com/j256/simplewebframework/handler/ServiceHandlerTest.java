@@ -17,17 +17,13 @@ import javax.ws.rs.QueryParam;
 import org.eclipse.jetty.server.Request;
 import org.junit.Test;
 
-import com.j256.simplewebframework.displayer.ResultDisplayer;
-
 public class ServiceHandlerTest {
 
 	@Test
 	public void testBasic() throws Exception {
 		ServiceHandler handler = new ServiceHandler();
 		Service service = new Service();
-		handler.setWebServices(new Object[] { service });
-		handler.setResultDisplayers(new ResultDisplayer[0]);
-		handler.init();
+		handler.registerWebService(service);
 
 		Request baseRequest = org.easymock.classextension.EasyMock.createMock(Request.class);
 		HttpServletRequest request = createMock(HttpServletRequest.class);

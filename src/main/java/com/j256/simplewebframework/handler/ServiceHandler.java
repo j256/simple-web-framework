@@ -26,63 +26,11 @@ import com.j256.simplewebframework.displayer.ResultDisplayer;
 public class ServiceHandler extends AbstractHandler {
 
 	private String handlerPathPrefix = "";
-	private Object[] webServices;
-	private ResultDisplayer[] resultDisplayers;
 
 	private final Map<String, MethodWrapper> methodWrappers = new HashMap<String, MethodWrapper>();
 	private final Map<Class<?>, ResultDisplayer> displayerClassMap = new HashMap<Class<?>, ResultDisplayer>();
 	private final Map<String, ResultDisplayer> displayerMimeTypeMap = new HashMap<String, ResultDisplayer>();
 	private boolean pathParam;
-
-	public void init() throws Exception {
-		for (Object webService : webServices) {
-
-			if (!webService.getClass().isAnnotationPresent(WebService.class)) {
-				throw new IllegalArgumentException("Expected @WebService annotation on class "
-						+ webService.getClass().getSimpleName());
-			}
-
-			String classPathPrefix = "";
-			Path servicePath = webService.getClass().getAnnotation(Path.class);
-			if (servicePath != null) {
-				classPathPrefix = servicePath.value();
-			}
-
-			Produces produces = webService.getClass().getAnnotation(Produces.class);
-			String webServiceContentType = null;
-			if (produces != null) {
-				String contentTypes[] = produces.value();
-				if (contentTypes != null && contentTypes.length > 0) {
-					webServiceContentType = contentTypes[0];
-				}
-			}
-
-			// now process the class' methods all the way up the object chain
-			for (Class<?> clazz = webService.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
-
-				// process the methods on the class looking for @WebMethod
-				processMethods(webService, classPathPrefix, webServiceContentType, clazz);
-
-				// process that classes interfaces as well
-				for (Class<?> interfaceClass : clazz.getInterfaces()) {
-					processMethods(webService, classPathPrefix, webServiceContentType, interfaceClass);
-				}
-			}
-		}
-
-		for (ResultDisplayer resultDisplayer : resultDisplayers) {
-			if (resultDisplayer.getHandledClasses() != null) {
-				for (Class<?> clazz : resultDisplayer.getHandledClasses()) {
-					displayerClassMap.put(clazz, resultDisplayer);
-				}
-			}
-			if (resultDisplayer.getHandledMimeTypes() != null) {
-				for (String mimeType : resultDisplayer.getHandledMimeTypes()) {
-					displayerMimeTypeMap.put(mimeType, resultDisplayer);
-				}
-			}
-		}
-	}
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
@@ -97,6 +45,10 @@ public class ServiceHandler extends AbstractHandler {
 			if (pathParam) {
 				for (Map.Entry<String, MethodWrapper> entry : methodWrappers.entrySet()) {
 					String methodPath = entry.getKey();
+					/*
+					 * TODO: is this right? Shouldn't we match up to the dynamic parameter or something? Need to test
+					 * this.
+					 */
 					if (pathInfo.startsWith(methodPath) && pathInfo.length() > methodPath.length()
 							&& pathInfo.charAt(methodPath.length()) == '/') {
 						methodWrapper = entry.getValue();
@@ -115,9 +67,17 @@ public class ServiceHandler extends AbstractHandler {
 		}
 
 		// we need to take a look at the class here and find a renderer
-		Object result = methodWrapper.processRequest(baseRequest, request, response);
-		if (result == null) {
+		Object result;
+		try {
+			result = methodWrapper.processRequest(baseRequest, request, response);
+		} finally {
 			if (response.isCommitted()) {
+				baseRequest.setHandled(true);
+			}
+		}
+		if (result == null) {
+			// if the process method returns void and we did not throw then we have handled the request we guess.
+			if (methodWrapper.isReturnsVoid()) {
 				baseRequest.setHandled(true);
 			}
 		} else {
@@ -127,11 +87,72 @@ public class ServiceHandler extends AbstractHandler {
 				displayer = displayerMimeTypeMap.get(response.getContentType());
 			}
 			if (displayer == null) {
-				// result is ignored
+				/*
+				 * Result was returned but cannot be displayed so it is ignored and the request may not be marked as
+				 * handled.
+				 */
 			} else {
 				if (displayer.renderResult(baseRequest, request, response, result)) {
 					baseRequest.setHandled(true);
+				} else {
+					/*
+					 * Displayer was not able to render the result so the result is ignored and the request may not be
+					 * marked as handled.
+					 */
 				}
+			}
+		}
+	}
+
+	/**
+	 * Register a web-service with the service handler.
+	 */
+	public void registerWebService(Object webService) {
+		if (!webService.getClass().isAnnotationPresent(WebService.class)) {
+			throw new IllegalArgumentException("Expected @WebService annotation on class "
+					+ webService.getClass().getSimpleName());
+		}
+	
+		String classPathPrefix = "";
+		Path servicePath = webService.getClass().getAnnotation(Path.class);
+		if (servicePath != null) {
+			classPathPrefix = servicePath.value();
+		}
+	
+		Produces produces = webService.getClass().getAnnotation(Produces.class);
+		String webServiceContentType = null;
+		if (produces != null) {
+			String contentTypes[] = produces.value();
+			if (contentTypes != null && contentTypes.length > 0) {
+				webServiceContentType = contentTypes[0];
+			}
+		}
+	
+		// now process the class' methods all the way up the object chain
+		for (Class<?> clazz = webService.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+	
+			// process the methods on the class looking for @WebMethod
+			processMethods(webService, classPathPrefix, webServiceContentType, clazz);
+	
+			// process that classes interfaces as well
+			for (Class<?> interfaceClass : clazz.getInterfaces()) {
+				processMethods(webService, classPathPrefix, webServiceContentType, interfaceClass);
+			}
+		}
+	}
+
+	/**
+	 * Register a result displayer with this service handler.
+	 */
+	public void registerResultDisplayer(ResultDisplayer resultDisplayer) {
+		if (resultDisplayer.getHandledClasses() != null) {
+			for (Class<?> clazz : resultDisplayer.getHandledClasses()) {
+				displayerClassMap.put(clazz, resultDisplayer);
+			}
+		}
+		if (resultDisplayer.getHandledMimeTypes() != null) {
+			for (String mimeType : resultDisplayer.getHandledMimeTypes()) {
+				displayerMimeTypeMap.put(mimeType, resultDisplayer);
 			}
 		}
 	}
@@ -141,11 +162,15 @@ public class ServiceHandler extends AbstractHandler {
 	}
 
 	public void setWebServices(Object[] webServices) {
-		this.webServices = webServices;
+		for (Object webService : webServices) {
+			registerWebService(webService);
+		}
 	}
 
 	public void setResultDisplayers(ResultDisplayer[] resultDisplayers) {
-		this.resultDisplayers = resultDisplayers;
+		for (ResultDisplayer resultDisplayer : resultDisplayers) {
+			registerResultDisplayer(resultDisplayer);
+		}
 	}
 
 	private void processMethods(Object webService, String classPathPrefix, String webServiceContentType, Class<?> clazz) {
