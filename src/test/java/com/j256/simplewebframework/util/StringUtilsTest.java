@@ -2,6 +2,7 @@ package com.j256.simplewebframework.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
@@ -92,5 +93,29 @@ public class StringUtilsTest {
 	@Test
 	public void testEmpty() {
 		assertEquals(0, StringUtils.split("", '.').length);
+	}
+
+	@Test
+	public void testReplace() {
+		assertEquals("hello there", StringUtils.replace("hello,there", ",", " "));
+		String str = "hello there";
+		assertSame(str, StringUtils.replace(str, ",", " "));
+	}
+
+	@Test
+	public void testReplaceShorter() {
+		assertEquals("zip there", StringUtils.replace("hello there", "hello", "zip"));
+	}
+
+	@Test
+	public void testReplaceNulls() {
+		assertNull(StringUtils.replace(null, ",", " "));
+		String str = "wow";
+		assertSame(str, StringUtils.replace(str, null, " "));
+		assertSame(str, StringUtils.replace(str, ",", null));
+		String empty = "";
+		assertSame(empty, StringUtils.replace(empty, ",", " ").length());
+		assertSame(str, StringUtils.replace(str, empty, " ").length());
+		assertSame(str, StringUtils.replace(str, ",", empty).length());
 	}
 }

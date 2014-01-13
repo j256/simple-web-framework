@@ -58,8 +58,8 @@ public class RequestContext {
 	 * 
 	 * @return True if it worked otherwise false if it threw an exception.
 	 */
-	public boolean sendError(HttpErrorCode error, String message) {
-		return sendError(error.getHttpErrorCode(), message);
+	public boolean sendError(HttpErrorCode errorCode, String message) {
+		return sendError(errorCode.getHttpErrorCode(), message);
 	}
 
 	/**
@@ -73,6 +73,33 @@ public class RequestContext {
 			if (message == null) {
 				response.sendError(error);
 			} else {
+				response.sendError(error, message);
+			}
+			return true;
+		} catch (IOException e) {
+			// ignore the error
+			return false;
+		} finally {
+			try {
+				IoUtils.closeQuietly(response.getOutputStream());
+			} catch (IOException e) {
+				// ignore error if there is nothing to close
+			}
+		}
+	}
+
+	/**
+	 * Helper method to send an error back in the response object. For enumerated errors, see
+	 * {@link #sendError(HttpErrorCode, String)}.
+	 * 
+	 * @return True if it worked otherwise false if it threw an exception.
+	 */
+	public static boolean sendError(HttpServletResponse response, int error, String message) {
+		try {
+			if (message == null) {
+				response.sendError(error);
+			} else {
+				LoggingHandler.addExtraDetail("reason", message);
 				response.sendError(error, message);
 			}
 			return true;
