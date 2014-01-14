@@ -129,29 +129,28 @@ public class LoggingHandler extends AbstractHandler {
 		long startTime = System.currentTimeMillis();
 		// clear our extra details collection
 		extraDetails.get().clear();
-		boolean error = true;
+		Exception exception = null;
 		try {
 			// call the delegate to perform the web request
 			handler.handle(target, baseRequest, request, response);
-			error = false;
 		} catch (IOException e) {
-			addExtraDetail("threw", getRootCauseMessage(e));
+			exception = e;
 			throw e;
 		} catch (ServletException e) {
-			addExtraDetail("threw", getRootCauseMessage(e));
+			exception = e;
 			throw e;
 		} catch (Exception e) {
-			addExtraDetail("threw", getRootCauseMessage(e));
-			throw new IOException("Unable to execute request", e);
+			exception = e;
+			throw new ServletException("Unable to execute request", e);
 		} finally {
 			long duration = System.currentTimeMillis() - startTime;
 			Response jettyResponse = (Response) response;
-			String line = createLogEntry((Request) request, jettyResponse, duration, error);
+			String line = createLogEntry((Request) request, jettyResponse, duration, exception);
 			if (line != null) {
-				if (error) {
-					logger.error(line);
-				} else {
+				if (exception == null) {
 					logger.info(line);
+				} else {
+					logger.error(line);
 				}
 			}
 		}
@@ -189,10 +188,13 @@ public class LoggingHandler extends AbstractHandler {
 		return Long.toString(dateTimeMillis);
 	}
 
-	private String createLogEntry(Request request, Response response, long durationMillis, boolean isError) {
+	private String createLogEntry(Request request, Response response, long durationMillis, Exception exception) {
 		List<FieldValue> details = extraDetails.get();
 		if (details.size() > 0 && details.get(0) == IGNORE_PAIR) {
 			return null;
+		}
+		if (exception != null) {
+			details.add(new FieldValue("threw", StringUtils.getRootCauseMessage(exception)));
 		}
 
 		StringBuilder line = new StringBuilder(256);
@@ -217,10 +219,10 @@ public class LoggingHandler extends AbstractHandler {
 		line.append(SEPARATOR);
 		line.append(request.getProtocol());
 		line.append(SEPARATOR);
-		if (isError) {
-			line.append(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		} else {
+		if (exception == null) {
 			line.append(((Response) response).getStatus());
+		} else {
+			line.append(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		line.append(SEPARATOR);
 		appendIfNotEmpty(line, request.getHeader("Referer"));
@@ -271,13 +273,6 @@ public class LoggingHandler extends AbstractHandler {
 		str = StringUtils.replace(str, "%25", "%");
 		str = StringUtils.replace(str, "%2C", ",");
 		return str;
-	}
-
-	private static String getRootCauseMessage(Throwable th) {
-		while (th.getCause() != null) {
-			th = th.getCause();
-		}
-		return th.getMessage();
 	}
 
 	/**

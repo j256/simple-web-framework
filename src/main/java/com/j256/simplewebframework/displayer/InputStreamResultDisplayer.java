@@ -19,6 +19,8 @@ import com.j256.simplewebframework.util.IoUtils;
  */
 public class InputStreamResultDisplayer implements ResultDisplayer {
 
+	private static final int BUFFER_SIZE = 4096;
+
 	@Override
 	public Class<?>[] getHandledClasses() {
 		return new Class[] { InputStream.class };
@@ -36,7 +38,7 @@ public class InputStreamResultDisplayer implements ResultDisplayer {
 		ServletOutputStream sos = null;
 		try {
 			sos = response.getOutputStream();
-			byte[] buffer = new byte[4096];
+			byte[] buffer = new byte[BUFFER_SIZE];
 			while (true) {
 				int numRead = is.read(buffer);
 				if (numRead < 0) {

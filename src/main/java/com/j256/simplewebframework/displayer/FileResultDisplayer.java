@@ -14,6 +14,8 @@ import org.eclipse.jetty.io.Buffer;
 import org.eclipse.jetty.server.Request;
 
 import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.ResponseUtils;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 
 /**
  * Displayer that writes the data from a file to the response.
@@ -22,7 +24,8 @@ import com.j256.simplewebframework.util.IoUtils;
  */
 public class FileResultDisplayer implements ResultDisplayer {
 
-	private final MimeTypes mimeTypes = new MimeTypes();
+	private static final MimeTypes mimeTypes = new MimeTypes();
+	private static final int BUFFER_SIZE = 4096;
 
 	@Override
 	public Class<?>[] getHandledClasses() {
@@ -61,8 +64,7 @@ public class FileResultDisplayer implements ResultDisplayer {
 			long ifModified = request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
 			// we do / 1000 because the file system last-modified is in seconds
 			if (ifModified > 0 && (lastModified / 1000) <= (ifModified / 1000)) {
-				response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-				IoUtils.closeQuietly(response.getOutputStream());
+				ResponseUtils.sendError(response, HttpErrorCode.NOT_MODIFIED);
 				return true;
 			}
 		}
@@ -78,7 +80,7 @@ public class FileResultDisplayer implements ResultDisplayer {
 		try {
 			sos = response.getOutputStream();
 			fis = new FileInputStream(file);
-			byte[] buffer = new byte[4096];
+			byte[] buffer = new byte[BUFFER_SIZE];
 			while (true) {
 				int numRead = fis.read(buffer);
 				if (numRead < 0) {

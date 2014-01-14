@@ -75,4 +75,14 @@ public class StringUtils {
 		buf.append(text.substring(start));
 		return buf.toString();
 	}
+
+	/**
+	 * Get the root caused by message from the throwable argument.
+	 */
+	public static String getRootCauseMessage(Throwable th) {
+		while (th.getCause() != null) {
+			th = th.getCause();
+		}
+		return th.getMessage();
+	}
 }
