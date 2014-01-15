@@ -2,16 +2,19 @@ package com.j256.simplewebframework.util;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.j256.simplewebframework.handler.LoggingHandler;
 
 /**
- * Response utilities.
+ * Response utilities that handle errors, redirects, and other changes to the response object.
  * 
  * @author graywatson
  */
 public class ResponseUtils {
+
+	private static final int DEFAULT_HTTP_PORT = 80;
 
 	/**
 	 * Helper method to send an error back in the response object. This also closes the response output stream.
@@ -30,24 +33,66 @@ public class ResponseUtils {
 	public static boolean sendError(HttpServletResponse response, HttpErrorCode errorCode, String message) {
 		try {
 			if (message == null) {
-				message = errorCode.defaultMessage;
+				message = errorCode.getDefaultMessage();
 			} else {
 				// NOTE: we do this even if the logging handler isn't configured because it doesn't cost much
 				LoggingHandler.addExtraDetail("reason", message);
 			}
-			response.sendError(errorCode.httpErrorCode, message);
+			response.sendError(errorCode.getHttpErrorCode(), message);
 			return true;
 		} catch (IOException e) {
-			response.setStatus(errorCode.httpErrorCode);
+			response.setStatus(errorCode.getHttpErrorCode());
 			// ignore the error
 			return false;
 		} finally {
-			try {
-				IoUtils.closeQuietly(response.getOutputStream());
-			} catch (IOException e) {
-				// ignore error if there is nothing to close
-			}
+			closeOutputQuietly(response);
 		}
+	}
+
+	/**
+	 * Closes the output stream assocatiated with the response object quietly.
+	 */
+	public static void closeOutputQuietly(HttpServletResponse response) {
+		try {
+			IoUtils.closeQuietly(response.getOutputStream());
+		} catch (IOException e) {
+			// ignore error if there is nothing to close
+		}
+	}
+
+	/**
+	 * Send a redirect to a local relative path on the same server/port. The response should not yet be committed but
+	 * will be after this method finishes. This also closes the response output stream.
+	 */
+	public static void sendRedirect(HttpServletRequest request, HttpServletResponse response, String path)
+			throws IOException {
+		StringBuilder sb = buildUrlLikeRequest(request, path);
+		response.sendRedirect(sb.toString());
+		closeOutputQuietly(response);
+	}
+
+	/**
+	 * Build up an URL going back to the same server/port, etc. but to a new path.
+	 * 
+	 * @param path
+	 *            that will be added to the end of the URL. If `null` then '/' will be used.
+	 */
+	public static StringBuilder buildUrlLikeRequest(HttpServletRequest request, String path) {
+		StringBuilder sb = new StringBuilder(128);
+		sb.append(request.getScheme()).append("://");
+		sb.append(request.getServerName());
+		if (request.getServerPort() != DEFAULT_HTTP_PORT) {
+			sb.append(':').append(request.getServerPort());
+		}
+		if (path == null) {
+			sb.append('/');
+		} else {
+			if (!path.startsWith("/")) {
+				sb.append('/');
+			}
+			sb.append(path);
+		}
+		return sb;
 	}
 
 	/**
