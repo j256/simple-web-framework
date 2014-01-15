@@ -14,7 +14,8 @@ import com.google.gson.Gson;
 import com.j256.simplewebframework.util.IoUtils;
 
 /**
- * Json displayer that uses the optional {@link Gson} package.
+ * Json displayer that uses the optional {@link Gson} package (com.google.gson). If you are using this displayer then
+ * you need to import the Gson jars into your project.
  * 
  * @author graywatson
  */

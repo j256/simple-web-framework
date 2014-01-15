@@ -11,7 +11,9 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 /**
- * XML displayer that uses the optional {@link Serializer} from the SimpleFramework XML package.
+ * XML displayer that uses the optional {@link Serializer} from the SimpleFramework XML package
+ * (org.simpleframework.xml). If you are using this displayer then you need to import the SimpleFramework jars into your
+ * project.
  * 
  * @author graywatson
  */
