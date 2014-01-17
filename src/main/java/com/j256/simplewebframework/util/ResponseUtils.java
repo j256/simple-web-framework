@@ -61,10 +61,18 @@ public class ResponseUtils {
 	}
 
 	/**
+	 * Send a redirect to full URL.
+	 */
+	public static void sendRedirect(HttpServletResponse response, String url) throws IOException {
+		response.sendRedirect(url);
+		closeOutputQuietly(response);
+	}
+
+	/**
 	 * Send a redirect to a local relative path on the same server/port. The response should not yet be committed but
 	 * will be after this method finishes. This also closes the response output stream.
 	 */
-	public static void sendRedirect(HttpServletRequest request, HttpServletResponse response, String path)
+	public static void sendRelativeRedirect(HttpServletRequest request, HttpServletResponse response, String path)
 			throws IOException {
 		StringBuilder sb = buildUrlLikeRequest(request, path);
 		response.sendRedirect(sb.toString());
