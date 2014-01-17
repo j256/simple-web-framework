@@ -114,8 +114,8 @@ public class StringUtilsTest {
 		assertSame(str, StringUtils.replace(str, null, " "));
 		assertSame(str, StringUtils.replace(str, ",", null));
 		String empty = "";
-		assertSame(empty, StringUtils.replace(empty, ",", " ").length());
-		assertSame(str, StringUtils.replace(str, empty, " ").length());
-		assertSame(str, StringUtils.replace(str, ",", empty).length());
+		assertEquals(0, StringUtils.replace(empty, ",", " ").length());
+		assertEquals(str, StringUtils.replace(str, empty, " "));
+		assertEquals(str, StringUtils.replace(str, ",", empty));
 	}
 }
