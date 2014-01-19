@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -145,6 +146,14 @@ public class ParamInfo {
 					this.paramSource = ParamSource.CLIENT_ADDRS;
 				} else {
 					throw new IllegalArgumentException("@ClientAddrsParam class must be of type String[] for " + this);
+				}
+			} else if (anno instanceof FormParam) {
+				FormParam formParam = (FormParam) anno;
+				this.name = formParam.value();
+				if (this.isArray) {
+					this.paramSource = ParamSource.QUERY_ARRAY;
+				} else {
+					this.paramSource = ParamSource.QUERY;
 				}
 			}
 		}
