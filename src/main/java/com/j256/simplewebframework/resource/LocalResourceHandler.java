@@ -30,11 +30,11 @@ public class LocalResourceHandler extends AbstractHandler {
 	private ResultDisplayer defaultDisplayer;
 
 	@SuppressWarnings("unused")
-	@JmxAttributeField(description = "Number of head requests")
+	@JmxAttributeField(description = "Number of HEAD requests")
 	private int headRequestsCount = 0;
 	@SuppressWarnings("unused")
-	@JmxAttributeField(description = "Number of not-modified responses")
-	private int notModifiedResponsesCount = 0;
+	@JmxAttributeField(description = "Number of GET requests")
+	private int getRequestsCount = 0;
 	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "Number of files requested")
 	private int invalidRequestsCount = 0;
@@ -56,7 +56,11 @@ public class LocalResourceHandler extends AbstractHandler {
 		}
 		request.setHandled(true);
 
-		if (!HttpMethods.GET.equals(servletRequest.getMethod()) && !HttpMethods.HEAD.equals(servletRequest.getMethod())) {
+		if (HttpMethods.HEAD.equals(servletRequest.getMethod())) {
+			headRequestsCount++;
+		} else if (HttpMethods.GET.equals(servletRequest.getMethod())) {
+			getRequestsCount++;
+		} else {
 			invalidRequestsCount++;
 			ResponseUtils.sendError(servletResponse, HttpErrorCode.BAD_REQUEST,
 					"invalid request for local resource, only GET and HEAD is accepted");
@@ -70,7 +74,7 @@ public class LocalResourceHandler extends AbstractHandler {
 			return;
 		}
 		if (!path.startsWith("/")) {
-			invalidPathsCount++;
+			unknownPathsCount++;
 			ResponseUtils.sendError(servletResponse, HttpErrorCode.BAD_REQUEST,
 					"Invalid request, path doesn't start with /");
 			return;
@@ -87,7 +91,7 @@ public class LocalResourceHandler extends AbstractHandler {
 
 		FileInfo fileInfo = fileLocator.findFile(path);
 		if (fileInfo == null) {
-			invalidPathsCount++;
+			unknownPathsCount++;
 			ResponseUtils.sendError(servletResponse, HttpErrorCode.NOT_FOUND);
 			return;
 		}
