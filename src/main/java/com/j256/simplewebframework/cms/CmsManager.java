@@ -315,7 +315,6 @@ public class CmsManager {
 	}
 
 	private List<RevisionInfo> readRevisionInfos() throws IOException {
-		// String s3Path = s3CmsPrefix + "/" + configPath;
 		// download the config file
 		InputStream is = contentZipSource.getRevisionConfigInputStream();
 		if (is == null) {

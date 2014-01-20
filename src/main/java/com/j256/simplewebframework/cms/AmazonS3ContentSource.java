@@ -45,7 +45,7 @@ public class AmazonS3ContentSource implements ContentSource {
 
 	@Override
 	public InputStream getRevisionConfigInputStream() throws IOException {
-		String s3Path = s3CmsPrefix + "/" + configPath;
+		String s3Path = s3CmsPrefix + configPath;
 		// download the config file
 		S3Object object = getObject(s3Bucket, s3Path);
 		if (object == null) {
@@ -57,7 +57,7 @@ public class AmazonS3ContentSource implements ContentSource {
 
 	@Override
 	public InputStream getContentZipInputStream(String branch, int revision) throws IOException {
-		String cmsZipPath = s3CmsPrefix + "/" + branch + "/" + revision + ".zip";
+		String cmsZipPath = s3CmsPrefix + branch + "/" + revision + ".zip";
 		S3Object object = getObject(s3Bucket, cmsZipPath);
 		if (object == null) {
 			logger.error("Could not find cms zip file: " + cmsZipPath);
