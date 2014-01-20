@@ -2,6 +2,8 @@ package com.j256.simplewebframework.cms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -10,9 +12,11 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.j256.simplejmx.common.JmxAttributeField;
+import com.j256.simplejmx.common.JmxOperation;
 import com.j256.simplejmx.common.JmxResource;
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
+import com.j256.simplewebframework.util.IoUtils;
 
 /**
  * Amazon S3 Content Source to get the CMS revision information from S3. To use this class you will need to depend on
@@ -45,7 +49,7 @@ public class AmazonS3ContentSource implements ContentSource {
 		// download the config file
 		S3Object object = getObject(s3Bucket, s3Path);
 		if (object == null) {
-			logger.error("Could not find config-file: " + s3Path);
+			logger.error("Could not find config-file '" + s3Path + "' in bucket '" + s3Bucket + "'");
 			return null;
 		}
 		return object.getObjectContent();
@@ -78,10 +82,41 @@ public class AmazonS3ContentSource implements ContentSource {
 		this.s3Client = new AmazonS3Client(awsCredentials);
 	}
 
-	public S3Object getObject(String bucketName, String key) throws IOException {
+	@JmxOperation(description = "Show the contents of the revision config file")
+	public String downloadRevisionConfig() {
+		InputStream stream = null;
+		InputStreamReader reader = null;
+		try {
+			stream = getRevisionConfigInputStream();
+			if (stream == null) {
+				return "Config file not found";
+			}
+			reader = new InputStreamReader(stream);
+			stream = null;
+			StringWriter writer = new StringWriter();
+			char[] buf = new char[1024];
+			while (true) {
+				int numRead = reader.read(buf);
+				if (numRead < 0) {
+					break;
+				}
+				writer.write(buf, 0, numRead);
+			}
+			return writer.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Threw " + e;
+		} finally {
+			IoUtils.closeQuietly(reader);
+			IoUtils.closeQuietly(stream);
+		}
+	}
+
+	private S3Object getObject(String bucketName, String key) throws IOException {
 		try {
 			return s3Client.getObject(new GetObjectRequest(bucketName, key));
 		} catch (AmazonServiceException e) {
+			logger.error(e, "getting '" + key + "' from bucket '" + bucketName + "' threw: " + e);
 			if (e.getStatusCode() == 404 /* not found */
 					|| e.getStatusCode() == 403 /* forbidden */) {
 				return null;
