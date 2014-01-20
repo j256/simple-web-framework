@@ -24,12 +24,17 @@ import com.j256.simplewebframework.util.IoUtils;
 /**
  * CMS version downloader and manager.
  * 
+ * <p>
+ * <b>NOTE:</b> You may need to subclass this class and override the {@link #makeLink(File, File)} method to make a
+ * "symbolic-link" or alias appropriately on your architecture.
+ * </p>
+ * 
  * @author graywatson
  */
 @JmxResource(domainName = "j256.simpleweb", description = "CMS downloader and manager")
 public class CmsManager {
 
-	private static final Logger logger = LoggerFactory.getLogger(CmsManager.class);
+	protected static final Logger logger = LoggerFactory.getLogger(CmsManager.class);
 
 	private ContentSource contentZipSource;
 	@JmxAttributeField(description = "local directory we write the CMS stuff too")
@@ -152,6 +157,26 @@ public class CmsManager {
 		// remove the directories that are not in the config file
 		clearBranches(revisionInfos, liveFile);
 		clearRevisions(revisionInfos, liveFile);
+	}
+
+	/**
+	 * Make a "symbolic-link" or "alias" from an existing file to a link file. This is very operating system specific
+	 * with the default working on Unix and OSX. You may need to override this method to do this properly on your
+	 * architecture or to call future versions of Java which support symlinks.
+	 */
+	protected void makeLink(File existingFile, File linkFile) throws IOException {
+		Process process =
+				Runtime.getRuntime().exec(new String[] { "/bin/ln", "-s", existingFile.getPath(), linkFile.getPath() });
+		int errorCode;
+		try {
+			errorCode = process.waitFor();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IOException("Link operation was interrupted", e);
+		}
+		if (errorCode != 0) {
+			logAndThrow("Could not create symlink from " + existingFile + " to " + linkFile, null);
+		}
 	}
 
 	private void clearBranches(List<RevisionInfo> revisionInfos, File liveFile) {
@@ -329,23 +354,13 @@ public class CmsManager {
 		return revisionInfos;
 	}
 
-	private void makeLink(File existingFile, File linkFile) throws IOException {
-		Process process =
-				Runtime.getRuntime().exec(new String[] { "/bin/ln", "-s", existingFile.getPath(), linkFile.getPath() });
-		int errorCode;
-		try {
-			errorCode = process.waitFor();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new IOException("Link operation was interrupted");
-		}
-		if (errorCode != 0) {
-			logAndThrow("Could not create symlink from " + existingFile + " to " + linkFile, null);
-		}
-	}
-
 	private void logAndThrow(String msg, Exception e) throws IOException {
-		logger.error(msg, e);
-		throw new IOException(msg, e);
+		if (e == null) {
+			logger.error(msg);
+			throw new IOException(msg);
+		} else {
+			logger.error(msg, e);
+			throw new IOException(msg, e);
+		}
 	}
 }
