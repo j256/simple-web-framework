@@ -538,6 +538,13 @@ enum ParamType implements ParamConverter {
 		return converter;
 	}
 
+	/**
+	 * Return the default no-op converter.
+	 */
+	public static ParamConverter getNoopConverter() {
+		return ParamType.STRING;
+	}
+
 	@Override
 	public String toString() {
 		return clazz.getSimpleName() + " type";

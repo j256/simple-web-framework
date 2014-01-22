@@ -169,7 +169,7 @@ public class ParamInfo {
 				throw new IllegalArgumentException("Unknown parameter type " + type + " for " + this);
 			}
 		} else {
-			this.converter = null;
+			this.converter = ParamType.getNoopConverter();
 		}
 	}
 
@@ -192,6 +192,7 @@ public class ParamInfo {
 				return null;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			if (!response.isCommitted()) {
 				ResponseUtils.sendError(response, HttpErrorCode.BAD_REQUEST,
 						"unable to process value for " + this.getWebError() + ": " + e.getMessage());
