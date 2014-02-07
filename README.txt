@@ -32,7 +32,7 @@ public class SampleWebProgram {
 		public String root(@QueryParam("value")	String value) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><body>\n");
-			sb.append("<h1> ").append(getClass().getSimpleName()).append(" Web Server </h1>\n");
+			sb.append("<h1> OurService Web Server </h1>\n");
 			if (value != null) {
 				sb.append("<p> value is passed in as '" + value + "' </p>\n");
 			}
