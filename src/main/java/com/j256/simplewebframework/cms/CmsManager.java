@@ -12,14 +12,15 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.j256.simplejmx.common.JmxAttributeField;
 import com.j256.simplejmx.common.JmxAttributeMethod;
 import com.j256.simplejmx.common.JmxOperation;
 import com.j256.simplejmx.common.JmxResource;
-import com.j256.simplewebframework.logger.Logger;
-import com.j256.simplewebframework.logger.LoggerFactory;
 import com.j256.simplewebframework.util.FileUtils;
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.IOUtils;
 
 /**
  * CMS version downloader and manager.
@@ -34,13 +35,18 @@ import com.j256.simplewebframework.util.IoUtils;
 @JmxResource(domainName = "j256.simpleweb", description = "CMS downloader and manager")
 public class CmsManager {
 
+	/**
+	 * This can be set for tests or other situations when you have the CMS hierarchy locally and don't want to download
+	 * the from the content source.
+	 */
+	private static final String LOCAL_CONTENT_DIR_PROPERTY = "j256.simpleWeb.cmsManager.localContentDir";
 	protected static final Logger logger = LoggerFactory.getLogger(CmsManager.class);
 
 	private ContentSource contentZipSource;
 	@JmxAttributeField(description = "local directory we write the CMS stuff too")
 	private File localDirectory;
 	@JmxAttributeField(description = "CMS path currently in service")
-	private String livePath;
+	private File liveFile;
 
 	private List<RevisionInfo> lastCmsUpateRevisions;
 	@JmxAttributeField(description = "live revision CMS directory")
@@ -59,7 +65,7 @@ public class CmsManager {
 	}
 
 	public void setLivePath(String livePath) {
-		this.livePath = livePath;
+		this.liveFile = new File(livePath);
 	}
 
 	@JmxAttributeMethod(description = "Revisions last updated")
@@ -81,6 +87,14 @@ public class CmsManager {
 	 */
 	@JmxOperation(description = "Update the CMS release")
 	public void updateCms() throws IOException {
+
+		String localContentDir = System.getProperty(LOCAL_CONTENT_DIR_PROPERTY);
+		if (localContentDir != null) {
+			// shortcut when we are testing locally and don't want to pull down from AWS
+			maybeUpdateLiveLink(false, new File(localContentDir));
+			return;
+		}
+
 		List<RevisionInfo> revisionInfos = readRevisionInfos();
 		lastCmsUpateRevisions = revisionInfos;
 
@@ -134,28 +148,11 @@ public class CmsManager {
 			logAndThrow("no new live revision directory was found", null);
 		}
 
-		File liveFile = new File(livePath);
-		/*
-		 * Take a look at the existing symlink. If it is pointing to the right directory then we are all set.
-		 */
-		if (liveFile.exists() && newLiveRevisionDir.getCanonicalFile().equals(liveFile.getCanonicalFile())) {
-			// we are already linked appropriately
-			if (downloaded) {
-				logger.info("cms is already linked to live directory: " + newLiveRevisionDir);
-			}
-		} else {
-			// need to make the symlink
-			File liveFileTmp = new File(livePath + ".t");
-			makeLink(newLiveRevisionDir, liveFileTmp);
-			// rename link into place
-			liveFileTmp.renameTo(liveFile);
-			logger.info("cms linked to live directory: " + newLiveRevisionDir);
-		}
-		liveRevisionDir = newLiveRevisionDir;
+		maybeUpdateLiveLink(downloaded, newLiveRevisionDir);
 
 		// remove the directories that are not in the config file
-		clearBranches(revisionInfos, liveFile);
-		clearRevisions(revisionInfos, liveFile);
+		clearBranches(revisionInfos);
+		clearRevisions(revisionInfos);
 	}
 
 	/**
@@ -178,7 +175,27 @@ public class CmsManager {
 		}
 	}
 
-	private void clearBranches(List<RevisionInfo> revisionInfos, File liveFile) {
+	/**
+	 * Take a look at the existing symlink. If it is pointing to the right directory then we are all set.
+	 */
+	private void maybeUpdateLiveLink(boolean downloaded, File newLiveRevisionDir) throws IOException {
+		if (liveFile.exists() && newLiveRevisionDir.getCanonicalFile().equals(liveFile.getCanonicalFile())) {
+			// we are already linked appropriately
+			if (downloaded) {
+				logger.info("cms is already linked to live directory: " + newLiveRevisionDir);
+			}
+		} else {
+			// need to make the symlink
+			File liveFileTmp = new File(liveFile.getPath() + ".t");
+			makeLink(newLiveRevisionDir, liveFileTmp);
+			// rename link into place
+			liveFileTmp.renameTo(liveFile);
+			logger.info("cms linked to live directory: " + newLiveRevisionDir);
+		}
+		liveRevisionDir = newLiveRevisionDir;
+	}
+
+	private void clearBranches(List<RevisionInfo> revisionInfos) {
 		for (File branchDir : localDirectory.listFiles()) {
 			if (branchDir.equals(liveFile)) {
 				// skip the symlink
@@ -210,7 +227,7 @@ public class CmsManager {
 		}
 	}
 
-	private void clearRevisions(List<RevisionInfo> revisionInfos, File liveFile) {
+	private void clearRevisions(List<RevisionInfo> revisionInfos) {
 		// accumulate all of the branch directories
 		for (File branchDir : localDirectory.listFiles()) {
 			if (branchDir.equals(liveFile)) {
@@ -279,8 +296,8 @@ public class CmsManager {
 			logger.info("downloaded revision {} to {}", info.getRevision(), downloadDir);
 			return true;
 		} finally {
-			IoUtils.closeQuietly(zipStream);
-			IoUtils.closeQuietly(is);
+			IOUtils.closeQuietly(zipStream);
+			IOUtils.closeQuietly(is);
 		}
 	}
 
@@ -297,7 +314,7 @@ public class CmsManager {
 				fos.write(buffer, 0, readCount);
 			}
 		} finally {
-			IoUtils.closeQuietly(fos);
+			IOUtils.closeQuietly(fos);
 		}
 		zipFile.setReadable(true, false);
 		zipFile.setWritable(true, true);
@@ -334,8 +351,8 @@ public class CmsManager {
 				configLines.add(line);
 			}
 		} finally {
-			IoUtils.closeQuietly(reader);
-			IoUtils.closeQuietly(is);
+			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(is);
 		}
 
 		List<RevisionInfo> revisionInfos = new ArrayList<RevisionInfo>();
