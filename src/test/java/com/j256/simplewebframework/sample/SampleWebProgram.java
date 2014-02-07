@@ -11,7 +11,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 
 import com.j256.simplewebframework.displayer.StringResultDisplayer;
-import com.j256.simplewebframework.handler.LoggingHandler;
 import com.j256.simplewebframework.handler.ServiceHandler;
 
 /**
@@ -35,22 +34,18 @@ public class SampleWebProgram {
 		connector.setReuseAddress(true);
 		server.addConnector(connector);
 
-		// create our logging handler which logs pageview results
-		LoggingHandler loggingHandler = new LoggingHandler();
-
 		// create a service handler
 		ServiceHandler serviceHandler = new ServiceHandler();
 		// register our service
 		serviceHandler.registerWebService(new OurService());
-		// register a displayer of String resultsn
+		// register a displayer of String results
 		serviceHandler.registerResultDisplayer(new StringResultDisplayer());
-		loggingHandler.setHandler(serviceHandler);
 
 		// this could be a collection of handlers or ...
-		server.setHandler(loggingHandler);
+		server.setHandler(serviceHandler);
 		server.start();
 
-		// keeps on running because of the jetty threads so you will need to control-c it to kill it
+		// keeps on running because of the jetty threads so you will need to kill it
 	}
 
 	/**
@@ -68,9 +63,9 @@ public class SampleWebProgram {
 				String value) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><body>\n");
-			sb.append("<h1> ").append(getClass().getSimpleName()).append(" Web Server </h1>\n");
+			sb.append("<h1> OurService Web Server </h1>\n");
 			if (value != null) {
-				sb.append("<p> value is passed in as '" + value + "' </p>\n");
+				sb.append("<p> value is '" + value + "' </p>\n");
 			}
 			sb.append("<p><form>\n");
 			sb.append("Please enter value: <input name='value' type='text'");
