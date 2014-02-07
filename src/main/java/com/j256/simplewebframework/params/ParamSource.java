@@ -60,7 +60,6 @@ public enum ParamSource {
 				ParamInfo paramInfo) throws IOException {
 			String value = request.getHeader(paramInfo.getName());
 			return paramInfo.convertString(value, response);
-
 		}
 	},
 
@@ -82,6 +81,7 @@ public enum ParamSource {
 		}
 		@Override
 		public boolean isNeedsConverter() {
+			// this returns false because it could be a cookie or another value
 			return false;
 		}
 	},
