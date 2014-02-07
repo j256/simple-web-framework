@@ -43,7 +43,6 @@ public class CmsManager {
 	private String livePath;
 
 	private List<RevisionInfo> lastCmsUpateRevisions;
-	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "live revision CMS directory")
 	private File liveRevisionDir;
 
