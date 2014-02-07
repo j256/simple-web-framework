@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * IOUtils
+ * IO utility methods copied from elsewhere.
  * 
  * @author graywatson
  */

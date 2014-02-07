@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * File level utils.
+ * File level utility methods copied and modified from elsewhere.
  * 
  * @author graywatson
  */
