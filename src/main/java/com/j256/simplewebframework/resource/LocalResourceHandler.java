@@ -29,19 +29,14 @@ public class LocalResourceHandler extends AbstractHandler {
 	private Map<String, ResultDisplayer> fileExtensionDisplayers = new HashMap<String, ResultDisplayer>();
 	private ResultDisplayer defaultDisplayer;
 
-	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "Number of HEAD requests")
 	private int headRequestsCount = 0;
-	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "Number of GET requests")
 	private int getRequestsCount = 0;
-	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "Number of files requested")
 	private int invalidRequestsCount = 0;
-	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "Number of invalid paths")
 	private int invalidPathsCount = 0;
-	@SuppressWarnings("unused")
 	@JmxAttributeField(description = "Number of unknown paths")
 	private int unknownPathsCount = 0;
 	private FileLocator fileLocator;
