@@ -26,7 +26,7 @@ public class SampleWebProgram {
 	private static final int DEFAULT_WEB_PORT = 8080;
 
 	public static void main(String[] args) throws Exception {
-		// create get jetty server
+		// create jetty server
 		Server server = new Server();
 		// create the connector which receives HTTPD connections
 		SelectChannelConnector connector = new SelectChannelConnector();
@@ -50,7 +50,7 @@ public class SampleWebProgram {
 		server.setHandler(loggingHandler);
 		server.start();
 
-		// keeps on running because of the jetty threads so you will need to stop
+		// keeps on running because of the jetty threads so you will need to control-c it to kill it
 	}
 
 	/**
