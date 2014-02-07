@@ -8,7 +8,7 @@ import java.io.IOException;
  * 
  * @author graywatson
  */
-public class IoUtils {
+public class IOUtils {
 
 	/**
 	 * Close a closeable and ignore any errors.

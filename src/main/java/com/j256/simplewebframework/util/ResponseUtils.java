@@ -54,7 +54,7 @@ public class ResponseUtils {
 	 */
 	public static void closeOutputQuietly(HttpServletResponse response) {
 		try {
-			IoUtils.closeQuietly(response.getOutputStream());
+			IOUtils.closeQuietly(response.getOutputStream());
 		} catch (IOException e) {
 			// ignore error if there is nothing to close
 		}

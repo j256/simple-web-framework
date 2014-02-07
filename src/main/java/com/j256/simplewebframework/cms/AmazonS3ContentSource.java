@@ -16,7 +16,7 @@ import com.j256.simplejmx.common.JmxOperation;
 import com.j256.simplejmx.common.JmxResource;
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.IOUtils;
 
 /**
  * Amazon S3 Content Source to get the CMS revision information from S3. To use this class you will need to depend on
@@ -107,8 +107,8 @@ public class AmazonS3ContentSource implements ContentSource {
 			e.printStackTrace();
 			return "Threw " + e;
 		} finally {
-			IoUtils.closeQuietly(reader);
-			IoUtils.closeQuietly(stream);
+			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(stream);
 		}
 	}
 

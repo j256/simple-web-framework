@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import com.google.gson.Gson;
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.IOUtils;
 
 /**
  * Json displayer that uses the optional {@link Gson} package (com.google.gson). If you are using this displayer then
@@ -59,7 +59,7 @@ public class JsonResultDisplayer implements ResultDisplayer {
 		} catch (Exception e) {
 			throw new IOException("could not write XML document to response", e);
 		} finally {
-			IoUtils.closeQuietly(writer);
+			IOUtils.closeQuietly(writer);
 		}
 	}
 }

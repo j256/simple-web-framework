@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.IOUtils;
 
 /**
  * Displayer that writes the data from a provided input-stream to the response. The input-stream will be closed
@@ -48,8 +48,8 @@ public class InputStreamResultDisplayer implements ResultDisplayer {
 			}
 			return true;
 		} finally {
-			IoUtils.closeQuietly(sos);
-			IoUtils.closeQuietly(is);
+			IOUtils.closeQuietly(sos);
+			IOUtils.closeQuietly(is);
 		}
 	}
 }

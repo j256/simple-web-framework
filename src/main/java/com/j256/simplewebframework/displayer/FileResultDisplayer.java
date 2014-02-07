@@ -13,7 +13,7 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.io.Buffer;
 import org.eclipse.jetty.server.Request;
 
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.IOUtils;
 import com.j256.simplewebframework.util.ResponseUtils;
 import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 
@@ -90,8 +90,8 @@ public class FileResultDisplayer implements ResultDisplayer {
 			}
 			return true;
 		} finally {
-			IoUtils.closeQuietly(sos);
-			IoUtils.closeQuietly(fis);
+			IOUtils.closeQuietly(sos);
+			IOUtils.closeQuietly(fis);
 		}
 	}
 

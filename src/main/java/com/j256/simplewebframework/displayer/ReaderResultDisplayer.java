@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 
-import com.j256.simplewebframework.util.IoUtils;
+import com.j256.simplewebframework.util.IOUtils;
 
 /**
  * Displayer that writes the data from a provided reader to the response. The reader will be closed afterwards.
@@ -45,8 +45,8 @@ public class ReaderResultDisplayer implements ResultDisplayer {
 			}
 			return true;
 		} finally {
-			IoUtils.closeQuietly(pw);
-			IoUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(pw);
+			IOUtils.closeQuietly(reader);
 		}
 	}
 }
