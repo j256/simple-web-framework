@@ -42,7 +42,7 @@ public class CmsManager {
 	private static final String LOCAL_CONTENT_DIR_PROPERTY = "j256.simpleWeb.cmsManager.localContentDir";
 	protected static final Logger logger = LoggerFactory.getLogger(CmsManager.class);
 
-	private ContentSource contentZipSource;
+	private ContentSource contentSource;
 	@JmxAttributeField(description = "local directory we write the CMS stuff too")
 	private File localDirectory;
 	@JmxAttributeField(description = "CMS path currently in service")
@@ -52,15 +52,15 @@ public class CmsManager {
 	@JmxAttributeField(description = "live revision CMS directory")
 	private File liveRevisionDir;
 
-	public void setContentZipSource(ContentSource contentZipSource) {
-		this.contentZipSource = contentZipSource;
+	public void setContentSource(ContentSource contentSource) {
+		this.contentSource = contentSource;
 	}
 
-	public void setLocalDirectory(File localDirectory) {
-		this.localDirectory = localDirectory;
+	public void setLocalPath(String localPath) {
+		this.localDirectory = new File(localPath);
 		this.localDirectory.mkdirs();
 		if (!this.localDirectory.isDirectory()) {
-			throw new IllegalArgumentException("Could not create localDirectory: " + localDirectory);
+			throw new IllegalArgumentException("Could not create localDirectory: " + localPath);
 		}
 	}
 
@@ -157,12 +157,21 @@ public class CmsManager {
 
 	/**
 	 * Make a "symbolic-link" or "alias" from an existing file to a link file. This is very operating system specific
-	 * with the default working on Unix and OSX. You may need to override this method to do this properly on your
-	 * architecture or to call future versions of Java which support symlinks.
+	 * with the default working on Unix, OSX, and maybe Windows using mklink built-in. You may need to override this
+	 * method to do this properly on your architecture or to call future versions of Java which support symlinks.
 	 */
 	protected void makeLink(File existingFile, File linkFile) throws IOException {
-		Process process =
-				Runtime.getRuntime().exec(new String[] { "/bin/ln", "-s", existingFile.getPath(), linkFile.getPath() });
+		Process process;
+		String unixLnPath = "/bin/ln";
+		if (new File(unixLnPath).canExecute()) {
+			process =
+					Runtime.getRuntime().exec(
+							new String[] { unixLnPath, "-s", existingFile.getPath(), linkFile.getPath() });
+		} else {
+			process =
+					Runtime.getRuntime().exec(
+							new String[] { "cmd", "/c", "mklink", "/j", linkFile.getPath(), existingFile.getPath() });
+		}
 		int errorCode;
 		try {
 			errorCode = process.waitFor();
@@ -171,7 +180,7 @@ public class CmsManager {
 			throw new IOException("Link operation was interrupted", e);
 		}
 		if (errorCode != 0) {
-			logAndThrow("Could not create symlink from " + existingFile + " to " + linkFile, null);
+			logAndThrow("Could not create symlink from " + linkFile + " to " + existingFile, null);
 		}
 	}
 
@@ -187,6 +196,7 @@ public class CmsManager {
 		} else {
 			// need to make the symlink
 			File liveFileTmp = new File(liveFile.getPath() + ".t");
+			liveFileTmp.delete();
 			makeLink(newLiveRevisionDir, liveFileTmp);
 			// rename link into place
 			liveFileTmp.renameTo(liveFile);
@@ -266,7 +276,7 @@ public class CmsManager {
 	}
 
 	private boolean downloadVersion(RevisionInfo info, File downloadDir) throws IOException {
-		InputStream is = contentZipSource.getContentZipInputStream(info.getBranch(), info.getRevision());
+		InputStream is = contentSource.getContentZipInputStream(info.getBranch(), info.getRevision());
 		if (is == null) {
 			logger.warn("Could not find cms revision {}", info);
 			return false;
@@ -283,7 +293,7 @@ public class CmsManager {
 				}
 				String fileName = entry.getName();
 				if (entry.isDirectory()) {
-					if (fileName.endsWith("/")) {
+					if (fileName.endsWith("/") || fileName.endsWith(File.separator)) {
 						fileName = fileName.substring(0, fileName.length() - 1);
 					}
 					File dir = new File(downloadDir, fileName);
@@ -332,7 +342,7 @@ public class CmsManager {
 
 	private List<RevisionInfo> readRevisionInfos() throws IOException {
 		// download the config file
-		InputStream is = contentZipSource.getRevisionConfigInputStream();
+		InputStream is = contentSource.getRevisionConfigInputStream();
 		if (is == null) {
 			logAndThrow("Could not find revision configuration file", null);
 		}
