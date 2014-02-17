@@ -243,7 +243,9 @@ public class LoggingHandler extends AbstractHandler {
 				String value = formatExtraDetails(detail.value);
 				line.append(key);
 				line.append(FIELD_VALUE_SEPARATOR);
-				line.append(value);
+				if (value != null) {
+					line.append(value);
+				}
 			}
 		}
 		line.append(SEPARATOR);
@@ -262,10 +264,13 @@ public class LoggingHandler extends AbstractHandler {
 	}
 
 	private static String formatExtraDetails(String str) {
+		if (str == null) {
+			return null;
+		}
 		// need to do this before the ,
 		str = StringUtils.replace(str, "%", "%25");
 		str = StringUtils.replace(str, ",", "%2C");
-		str = str.replace(SEPARATOR, ' ');
+		str = StringUtils.replace(str, SEPARATOR, ' ');
 		return str;
 	}
 

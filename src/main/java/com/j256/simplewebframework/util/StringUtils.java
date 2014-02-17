@@ -47,20 +47,18 @@ public class StringUtils {
 	}
 
 	/**
-	 * Replaces a String with another String inside a larger String, for the first {@code max} values of the search
-	 * String.
+	 * Replaces a String with another String inside a larger String.
 	 */
-	public static String replace(String text, String searchString, String replacement) {
-		if (text == null || text.length() == 0 || searchString == null || searchString.length() == 0
-				|| replacement == null) {
+	public static String replace(String text, String search, String replacement) {
+		if (text == null || text.length() == 0 || search == null || search.length() == 0 || replacement == null) {
 			return text;
 		}
 		int start = 0;
-		int end = text.indexOf(searchString, start);
+		int end = text.indexOf(search, start);
 		if (end < 0) {
 			return text;
 		}
-		int replLength = searchString.length();
+		int replLength = search.length();
 		// we assume that we will find 16 of these to replace
 		int increase = (replacement.length() - replLength) * 8;
 		if (increase < 0) {
@@ -70,7 +68,29 @@ public class StringUtils {
 		while (end >= 0) {
 			buf.append(text.substring(start, end)).append(replacement);
 			start = end + replLength;
-			end = text.indexOf(searchString, start);
+			end = text.indexOf(search, start);
+		}
+		buf.append(text.substring(start));
+		return buf.toString();
+	}
+
+	/**
+	 * Replaces a char with another char inside a String.
+	 */
+	public static String replace(String text, char search, char replacement) {
+		if (text == null || text.length() == 0) {
+			return text;
+		}
+		int start = 0;
+		int end = text.indexOf(search, start);
+		if (end < 0) {
+			return text;
+		}
+		StringBuilder buf = new StringBuilder(text.length());
+		while (end >= 0) {
+			buf.append(text.substring(start, end)).append(replacement);
+			start = end + 1;
+			end = text.indexOf(search, start);
 		}
 		buf.append(text.substring(start));
 		return buf.toString();
