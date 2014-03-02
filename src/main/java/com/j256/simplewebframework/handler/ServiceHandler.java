@@ -66,7 +66,6 @@ public class ServiceHandler extends AbstractHandler {
 			return;
 		}
 
-		// we need to take a look at the class here and find a renderer
 		Object result;
 		try {
 			result = methodWrapper.processRequest(baseRequest, request, response);
@@ -80,26 +79,28 @@ public class ServiceHandler extends AbstractHandler {
 			if (methodWrapper.isReturnsVoid()) {
 				baseRequest.setHandled(true);
 			}
+			return;
+		}
+
+		// we need to take a look at the class here and find a displayer
+		ResultDisplayer displayer = displayerClassMap.get(result.getClass());
+		if (displayer == null) {
+			// after we look up the class returned, we check the content-type
+			displayer = displayerMimeTypeMap.get(response.getContentType());
+		}
+		if (displayer == null) {
+			/*
+			 * Result was returned but cannot be displayed so it is ignored and the request may not be marked as
+			 * handled.
+			 */
 		} else {
-			ResultDisplayer displayer = displayerClassMap.get(result.getClass());
-			if (displayer == null) {
-				// after we look up the class returned, we check the content-type
-				displayer = displayerMimeTypeMap.get(response.getContentType());
-			}
-			if (displayer == null) {
-				/*
-				 * Result was returned but cannot be displayed so it is ignored and the request may not be marked as
-				 * handled.
-				 */
+			if (displayer.renderResult(baseRequest, request, response, result)) {
+				baseRequest.setHandled(true);
 			} else {
-				if (displayer.renderResult(baseRequest, request, response, result)) {
-					baseRequest.setHandled(true);
-				} else {
-					/*
-					 * Displayer was not able to render the result so the result is ignored and the request may not be
-					 * marked as handled.
-					 */
-				}
+				/*
+				 * Displayer was not able to render the result so the result is ignored and the request may not be
+				 * marked as handled.
+				 */
 			}
 		}
 	}

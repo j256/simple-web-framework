@@ -94,7 +94,7 @@
 		<simple-xml-version>2.6.6</simple-xml-version>
 		<gson-version>1.7.2</gson-version>
 		<aws-version>1.3.22</aws-version>
-		<simplejmx-version>1.4</simplejmx-version>
+		<simplejmx-version>1.8</simplejmx-version>
 		<slf4j-version>1.7.2</slf4j-version>
 		<!-- test versions -->
 		<easymock-version>2.3</easymock-version>
