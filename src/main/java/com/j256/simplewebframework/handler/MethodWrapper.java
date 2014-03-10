@@ -3,6 +3,7 @@ package com.j256.simplewebframework.handler;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -156,6 +157,10 @@ public class MethodWrapper {
 		return fullPath;
 	}
 
+	public RequestType[] getAllowedRequestTypes() {
+		return allowedRequestTypes;
+	}
+
 	public boolean isPathParam() {
 		return pathParam;
 	}
@@ -174,6 +179,11 @@ public class MethodWrapper {
 					.getSimpleName());
 			return null;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "MethodWrapper [types=" + Arrays.toString(allowedRequestTypes) + ", path=" + fullPath + "]";
 	}
 
 	private Object doProcessRequest(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
@@ -198,7 +208,7 @@ public class MethodWrapper {
 	/**
 	 * Type of HTTP request.
 	 */
-	private enum RequestType {
+	public enum RequestType {
 		GET,
 		HEAD,
 		POST,

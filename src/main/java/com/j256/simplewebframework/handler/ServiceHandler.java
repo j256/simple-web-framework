@@ -16,6 +16,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.j256.simplewebframework.displayer.ResultDisplayer;
+import com.j256.simplewebframework.handler.MethodWrapper.RequestType;
+import com.j256.simplewebframework.util.ResponseUtils;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 
 /**
  * Handler that wraps one or many {@link WebService} classes and takes the requests and makes method calls to the
@@ -27,7 +30,8 @@ public class ServiceHandler extends AbstractHandler {
 
 	private String handlerPathPrefix = "";
 
-	private final Map<String, MethodWrapper> methodWrappers = new HashMap<String, MethodWrapper>();
+	private final Map<String, Map<String, MethodWrapper>> typePathMaps =
+			new HashMap<String, Map<String, MethodWrapper>>();
 	private final Map<Class<?>, ResultDisplayer> displayerClassMap = new HashMap<Class<?>, ResultDisplayer>();
 	private final Map<String, ResultDisplayer> displayerMimeTypeMap = new HashMap<String, ResultDisplayer>();
 	private boolean pathParam;
@@ -40,10 +44,14 @@ public class ServiceHandler extends AbstractHandler {
 			return;
 		}
 		String pathInfo = request.getPathInfo();
-		MethodWrapper methodWrapper = methodWrappers.get(pathInfo);
+		MethodWrapper methodWrapper = null;
+		Map<String, MethodWrapper> pathMap = typePathMaps.get(request.getMethod());
+		if (pathMap != null) {
+			methodWrapper = pathMap.get(pathInfo);
+		}
 		if (methodWrapper == null) {
 			if (pathParam) {
-				for (Map.Entry<String, MethodWrapper> entry : methodWrappers.entrySet()) {
+				for (Map.Entry<String, MethodWrapper> entry : pathMap.entrySet()) {
 					String methodPath = entry.getKey();
 					/*
 					 * TODO: is this right? Shouldn't we match up to the dynamic parameter or something? Need to test
@@ -101,6 +109,7 @@ public class ServiceHandler extends AbstractHandler {
 				 * Displayer was not able to render the result so the result is ignored and the request may not be
 				 * marked as handled.
 				 */
+				ResponseUtils.sendError(response, HttpErrorCode.INTERNAL_SERVER_ERROR);
 			}
 		}
 	}
@@ -185,7 +194,14 @@ public class ServiceHandler extends AbstractHandler {
 
 			MethodWrapper wrapper =
 					new MethodWrapper(webService, webServiceContentType, method, handlerPathPrefix, classPathPrefix);
-			methodWrappers.put(wrapper.getFullPath(), wrapper);
+			for (RequestType type : wrapper.getAllowedRequestTypes()) {
+				Map<String, MethodWrapper> pathMap = typePathMaps.get(type.name());
+				if (pathMap == null) {
+					pathMap = new HashMap<String, MethodWrapper>();
+					typePathMaps.put(type.name(), pathMap);
+				}
+				pathMap.put(wrapper.getFullPath(), wrapper);
+			}
 			if (wrapper.isPathParam()) {
 				pathParam = true;
 			}
