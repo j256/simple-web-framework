@@ -1,4 +1,4 @@
-package com.j256.simplewebframework.sample;
+package com.j256.simplewebframework.example;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -19,7 +19,7 @@ import com.j256.simplewebframework.handler.ServiceHandler;
  * 
  * @author graywatson
  */
-public class SampleWebProgram {
+public class SimpleExample {
 
 	/** default web port that we will server jetty results on */
 	private static final int DEFAULT_WEB_PORT = 8080;

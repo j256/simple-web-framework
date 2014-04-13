@@ -6,9 +6,9 @@ are interested in using this and I'll get some docs, tests, and sample programs 
 ----------------------------------------------------------------------------------------
 
 Here's a little sample web program using this framework.  Working sample in
-SampleWebProgram.java down in src/test/java/.../sample: 
+SampleWebProgram.java down in src/test/java/.../example: 
 
-public class SampleWebProgram {
+public class SimpleWebProgram {
 
 	public static void main(String[] args) throws Exception {
 		// start jetty server on port 8080
