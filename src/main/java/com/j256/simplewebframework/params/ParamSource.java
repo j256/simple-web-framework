@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 import com.j256.simplewebframework.handler.RequestContext;
+import com.j256.simplewebframework.util.CookieUtils;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
@@ -67,17 +68,16 @@ public enum ParamSource {
 		@Override
 		public Object extractValue(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
 				ParamInfo paramInfo) throws IOException {
-			for (Cookie cookie : request.getCookies()) {
-				if (paramInfo.getName().equals(cookie.getName())) {
-					if (paramInfo.getParamType() == Cookie.class) {
-						return cookie;
-					} else {
-						String value = cookie.getValue();
-						return paramInfo.convertString(value, response);
-					}
-				}
+			Cookie cookie = CookieUtils.getCookie(request, paramInfo.getName());
+			if (cookie == null) {
+				return null;
 			}
-			return null;
+			if (paramInfo.getParamType() == Cookie.class) {
+				return cookie;
+			} else {
+				String value = cookie.getValue();
+				return paramInfo.convertString(value, response);
+			}
 		}
 		@Override
 		public boolean isNeedsConverter() {

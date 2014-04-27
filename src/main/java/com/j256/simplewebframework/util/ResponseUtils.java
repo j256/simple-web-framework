@@ -38,8 +38,12 @@ public class ResponseUtils {
 				// NOTE: we do this even if the logging handler isn't configured because it doesn't cost much
 				LoggingHandler.addExtraDetail("reason", message);
 			}
-			response.sendError(errorCode.getHttpErrorCode(), message);
-			return true;
+			if (response.isCommitted()) {
+				return false;
+			} else {
+				response.sendError(errorCode.getHttpErrorCode(), message);
+				return true;
+			}
 		} catch (IOException e) {
 			response.setStatus(errorCode.getHttpErrorCode());
 			// ignore the error
