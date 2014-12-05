@@ -43,7 +43,8 @@ public class SimpleWebProgram {
 				sb.append("<p> value is '" + value + "' </p>\n");
 			}
 			sb.append("<p><form>\n");
-			sb.append("Please enter value: <input name='value' type='text'");
+			sb.append("Please enter value: ");
+			sb.append("<input name='value' type='text'");
 			if (value != null) {
 				sb.append(" value='").append(value).append("'");
 			}
