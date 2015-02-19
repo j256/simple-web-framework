@@ -10,23 +10,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
-import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 import com.j256.simplewebframework.util.ResponseUtils;
+import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
  * A handler for Jetty that logs inbound requests to a slf4j Logger. This is designed to wrap around all other handlers
  * to be able to provide pageview and other logging.
  */
-public class LoggingHandler extends AbstractHandler {
+public class LoggingHandler extends HandlerWrapper {
 
 	private static final Logger logger = LoggerFactory.getLogger("PAGEVIEW");
 
@@ -37,8 +35,6 @@ public class LoggingHandler extends AbstractHandler {
 
 	// constant used to ignore the request
 	private static final FieldValue IGNORE_PAIR = new FieldValue("ignore", "me");
-
-	private Handler handler;
 
 	private static final ThreadLocal<List<FieldValue>> extraDetails = new ThreadLocal<List<FieldValue>>() {
 		@Override
@@ -112,18 +108,6 @@ public class LoggingHandler extends AbstractHandler {
 	}
 
 	@Override
-	protected void doStart() throws Exception {
-		handler.start();
-		super.doStart();
-	}
-
-	@Override
-	protected void doStop() throws Exception {
-		super.doStop();
-		handler.stop();
-	}
-
-	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		long startTime = System.currentTimeMillis();
@@ -132,7 +116,7 @@ public class LoggingHandler extends AbstractHandler {
 		Exception exception = null;
 		try {
 			// call the delegate to perform the web request
-			handler.handle(target, baseRequest, request, response);
+			super.handle(target, baseRequest, request, response);
 		} catch (IOException e) {
 			exception = e;
 			throw e;
@@ -154,22 +138,6 @@ public class LoggingHandler extends AbstractHandler {
 				}
 			}
 		}
-	}
-
-	public void setHandler(Handler handler) {
-		this.handler = handler;
-	}
-
-	@Override
-	public void setServer(Server server) {
-		super.setServer(server);
-		handler.setServer(server);
-	}
-
-	@Override
-	public void destroy() {
-		handler.destroy();
-		super.destroy();
 	}
 
 	/**
