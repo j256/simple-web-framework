@@ -52,6 +52,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 			modelView = (ModelView) result;
 			fileInfo = fileLocator.findFile(modelView.getView());
 			if (fileInfo == null) {
+				logger.error("template not found in path '{}'", modelView.getView());
 				return false;
 			}
 		} else if (result instanceof FileInfo) {
