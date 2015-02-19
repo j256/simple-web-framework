@@ -14,7 +14,6 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 
 import org.eclipse.jetty.server.Request;
 
@@ -55,6 +54,11 @@ public class ParamInfo {
 			this.isArray = false;
 		}
 
+		// special types that automatically get context information
+		if (type == RequestContext.class || type == HttpServletRequest.class || type == HttpServletResponse.class) {
+			this.paramSource = ParamSource.CONTEXT;
+		}
+
 		for (Annotation anno : annotations) {
 			if (anno instanceof QueryParam) {
 				QueryParam queryParam = (QueryParam) anno;
@@ -85,14 +89,6 @@ public class ParamInfo {
 				CookieParam cookieParam = (CookieParam) anno;
 				this.name = cookieParam.value();
 				this.paramSource = ParamSource.COOKIE;
-			} else if (anno instanceof Context) {
-				// annotation is just a marker annotation so no name
-				if (type == RequestContext.class || type == HttpServletRequest.class
-						|| type == HttpServletResponse.class) {
-					this.paramSource = ParamSource.CONTEXT;
-				} else {
-					throw new IllegalArgumentException("Unknown @Context class " + type + " for " + this);
-				}
 			} else if (anno instanceof DefaultValue) {
 				if (this.isArray) {
 					throw new IllegalArgumentException("Cannot specify a default value for an array type for " + this);
