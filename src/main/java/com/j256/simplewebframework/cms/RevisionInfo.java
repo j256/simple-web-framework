@@ -25,8 +25,9 @@ class RevisionInfo {
 	}
 
 	/**
-	 * Create a revision entry from a tab separated line.
 	 * <p>
+	 * Create a revision entry from a tab separated line.
+	 * </p>
 	 * 
 	 * <pre>
 	 * # lines that start with pound sign are comments and ignored along with blank lines
@@ -44,8 +45,6 @@ class RevisionInfo {
 	 * # live   branch   revision-number
 	 * true     trunk    123
 	 * </pre>
-	 * 
-	 * </p>
 	 */
 	public static RevisionInfo createRevisionInfo(String line) {
 		String[] parts = StringUtils.split(line, '\t');

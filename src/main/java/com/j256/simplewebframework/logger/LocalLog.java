@@ -27,6 +27,7 @@ import com.j256.simplewebframework.util.StringUtils;
  * 
  * <p>
  * It also supports a file ormliteLocalLog.properties file which contains lines such as:
+ * </p>
  * 
  * <pre>
  * # regex-pattern = Level
@@ -35,8 +36,6 @@ import com.j256.simplewebframework.util.StringUtils;
  * log4j\.logger\.com\.j256\.ormlite\.stmt\.mapped.MappedCreate=TRACE
  * log4j\.logger\.com\.j256\.ormlite\.stmt\.StatementExecutor=TRACE
  * </pre>
- * 
- * </p>
  * 
  * @author graywatson
  */
