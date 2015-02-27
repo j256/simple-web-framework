@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for method parameters which is set on a String[] param to show any X-Forwarded-For addreses and the final
- * remote-address.
+ * Method parameters which is set on a String[] param to show any X-Forwarded-For addreses and the final remote-address.
  * 
  * @author graywatson
  */

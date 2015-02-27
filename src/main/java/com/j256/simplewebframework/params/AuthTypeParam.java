@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for method parameters which show the remote-ip of the user in question.
+ * Method parameters which show the remote-ip of the user in question.
  * 
  * @author graywatson
  */

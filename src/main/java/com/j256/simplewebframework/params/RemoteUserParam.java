@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for method parameters which show the remote-user that has authenticated for the request or null if none.
+ * Method parameters which show the remote-user that has authenticated for the request or null if none.
  * 
  * @author graywatson
  */

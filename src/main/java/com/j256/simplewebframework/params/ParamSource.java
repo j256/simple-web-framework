@@ -14,7 +14,7 @@ import com.j256.simplewebframework.util.CookieUtils;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
- * Class which enumerates the source of values extracted from the request context.
+ * Enumeration of the source of values extracted from the request context.
  */
 public enum ParamSource {
 

@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * Class which handles the conversion of an object to a parameter.
+ * Handles the conversion of an object to a parameter.
  * 
  * @author graywatson
  */

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import javax.servlet.http.HttpSession;
 
 /**
- * Annotation for method parameters which sets the session variable to a {@link HttpSession} parameter.
+ * Method parameters which sets the session variable to a {@link HttpSession} parameter.
  * 
  * @author graywatson
  */

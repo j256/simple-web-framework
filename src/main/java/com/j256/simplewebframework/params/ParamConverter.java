@@ -3,7 +3,7 @@ package com.j256.simplewebframework.params;
 import java.io.IOException;
 
 /**
- * Class which converts the values for parameters to native types.
+ * Converts the values for parameters to native types.
  * 
  * @author graywatson
  */
