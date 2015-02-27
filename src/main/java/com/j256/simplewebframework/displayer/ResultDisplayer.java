@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 
 /**
- * This defines one or many mime-types that are rendered by this class. Either mime-types can be specified
+ * Class which displays a particular result object returned by a service handler method. The class either specifies an
+ * array of classes that it can display or an array of mime-types that it can handle.
  * 
  * @author graywatson
  */
@@ -25,6 +26,12 @@ public interface ResultDisplayer {
 	 * matched first.
 	 */
 	public String[] getHandledMimeTypes();
+
+	/**
+	 * Return true if this class can render this result otherwise will return false. This will never be called if the
+	 * classes or mime-types are specified instead. Classes and then mime-types are matched before this.
+	 */
+	public boolean canRender(Class<?> resultClass, String mimeType);
 
 	/**
 	 * Render the result parameter returned by the service methods to the response. This will not be called if the

@@ -34,7 +34,7 @@ import com.j256.simplewebframework.util.StringUtils;
  */
 public class MethodWrapper {
 
-	private static Logger logger = LoggerFactory.getLogger(MethodWrapper.class);
+	private static final Logger logger = LoggerFactory.getLogger(MethodWrapper.class);
 
 	private final Object webService;
 	private final Method method;

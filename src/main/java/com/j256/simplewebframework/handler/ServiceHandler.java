@@ -2,7 +2,9 @@ package com.j256.simplewebframework.handler;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jws.WebMethod;
@@ -17,6 +19,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import com.j256.simplewebframework.displayer.ResultDisplayer;
 import com.j256.simplewebframework.handler.MethodWrapper.RequestType;
+import com.j256.simplewebframework.logger.Logger;
+import com.j256.simplewebframework.logger.LoggerFactory;
 import com.j256.simplewebframework.util.ResponseUtils;
 import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 
@@ -28,12 +32,15 @@ import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
  */
 public class ServiceHandler extends AbstractHandler {
 
+	private static final Logger logger = LoggerFactory.getLogger(ServiceHandler.class);
+
 	private String handlerPathPrefix = "";
 
 	private final Map<String, Map<String, MethodWrapper>> typePathMaps =
 			new HashMap<String, Map<String, MethodWrapper>>();
 	private final Map<Class<?>, ResultDisplayer> displayerClassMap = new HashMap<Class<?>, ResultDisplayer>();
 	private final Map<String, ResultDisplayer> displayerMimeTypeMap = new HashMap<String, ResultDisplayer>();
+	private final List<ResultDisplayer> runtimeMatchDisplayers = new ArrayList<ResultDisplayer>();
 	private boolean pathParam;
 
 	@Override
@@ -91,16 +98,30 @@ public class ServiceHandler extends AbstractHandler {
 		}
 
 		// we need to take a look at the class here and find a displayer
-		ResultDisplayer displayer = displayerClassMap.get(result.getClass());
+		Class<? extends Object> resultClass = result.getClass();
+		String resultMimeType = response.getContentType();
+		ResultDisplayer displayer = displayerClassMap.get(resultClass);
 		if (displayer == null) {
 			// after we look up the class returned, we check the content-type
-			displayer = displayerMimeTypeMap.get(response.getContentType());
+			displayer = displayerMimeTypeMap.get(resultMimeType);
+
+			// if we did not find a specific class or specific content-type then check the runtime-match displayers
+			if (displayer == null) {
+				for (ResultDisplayer matchedDisplayer : runtimeMatchDisplayers) {
+					if (matchedDisplayer.canRender(resultClass, resultMimeType)) {
+						displayer = matchedDisplayer;
+						break;
+					}
+				}
+			}
 		}
+
 		if (displayer == null) {
 			/*
 			 * Result was returned but cannot be displayed so it is ignored and the request may not be marked as
 			 * handled.
 			 */
+			logger.debug("Could not display result of class {}, mime-type {}", resultClass, resultMimeType);
 		} else {
 			if (displayer.renderResult(baseRequest, request, response, result)) {
 				baseRequest.setHandled(true);
@@ -156,15 +177,21 @@ public class ServiceHandler extends AbstractHandler {
 	 * Register a result displayer with this service handler.
 	 */
 	public void registerResultDisplayer(ResultDisplayer resultDisplayer) {
+		boolean runtimeMatch = true;
 		if (resultDisplayer.getHandledClasses() != null) {
 			for (Class<?> clazz : resultDisplayer.getHandledClasses()) {
 				displayerClassMap.put(clazz, resultDisplayer);
 			}
+			runtimeMatch = false;
 		}
 		if (resultDisplayer.getHandledMimeTypes() != null) {
 			for (String mimeType : resultDisplayer.getHandledMimeTypes()) {
 				displayerMimeTypeMap.put(mimeType, resultDisplayer);
 			}
+			runtimeMatch = false;
+		}
+		if (runtimeMatch) {
+			runtimeMatchDisplayers.add(resultDisplayer);
 		}
 	}
 

@@ -23,7 +23,7 @@ public class JsonResultDisplayer implements ResultDisplayer {
 
 	private static final Pattern MSIE_PATTERN = Pattern.compile(".* MSIE ([\\d.]+);.*");
 
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	@Override
 	public Class<?>[] getHandledClasses() {
@@ -33,6 +33,11 @@ public class JsonResultDisplayer implements ResultDisplayer {
 	@Override
 	public String[] getHandledMimeTypes() {
 		return new String[] { "application/json" };
+	}
+
+	@Override
+	public boolean canRender(Class<?> resultClass, String mimeType) {
+		return false;
 	}
 
 	@Override
@@ -57,7 +62,7 @@ public class JsonResultDisplayer implements ResultDisplayer {
 			gson.toJson(result, writer);
 			return true;
 		} catch (Exception e) {
-			throw new IOException("could not write XML document to response", e);
+			throw new IOException("could not write JSON document to response", e);
 		} finally {
 			IOUtils.closeQuietly(writer);
 		}

@@ -12,32 +12,30 @@ import org.eclipse.jetty.server.Request;
 import com.j256.simplewebframework.util.IOUtils;
 
 /**
- * Displayer that writes the data from a provided reader to the response. The reader will be closed afterwards.
+ * Displayer that writes the data from a provided {@link Reader} to the response. The reader will be closed afterwards.
+ * 
+ * NOTE: we don't have to use a {@link BufferedReader} in this case because we will be reading from the reader in large
+ * chunks.
  * 
  * @author graywatson
  */
-public class ReaderResultDisplayer implements ResultDisplayer {
+public class ReaderResultDisplayer extends SingleClassResultDisplayer<Reader> {
 
-	@Override
-	public Class<?>[] getHandledClasses() {
-		return new Class[] { Reader.class };
+	private static final int BUFFER_SIZE = 4096;
+
+	public ReaderResultDisplayer() {
+		super(Reader.class);
 	}
 
 	@Override
-	public String[] getHandledMimeTypes() {
-		return null;
-	}
-
-	@Override
-	public boolean renderResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
-			Object result) throws IOException {
-		Reader reader = (Reader) result;
+	protected boolean renderTypedResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
+			Reader result) throws IOException {
 		PrintWriter pw = null;
 		try {
 			pw = response.getWriter();
-			char[] buffer = new char[4096];
+			char[] buffer = new char[BUFFER_SIZE];
 			while (true) {
-				int numRead = reader.read(buffer);
+				int numRead = result.read(buffer);
 				if (numRead < 0) {
 					break;
 				}
@@ -46,7 +44,7 @@ public class ReaderResultDisplayer implements ResultDisplayer {
 			return true;
 		} finally {
 			IOUtils.closeQuietly(pw);
-			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(result);
 		}
 	}
 }

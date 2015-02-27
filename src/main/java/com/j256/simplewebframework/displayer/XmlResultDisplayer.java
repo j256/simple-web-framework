@@ -19,7 +19,7 @@ import org.simpleframework.xml.core.Persister;
  */
 public class XmlResultDisplayer implements ResultDisplayer {
 
-	private Serializer serializer = new Persister();
+	private final Serializer serializer = new Persister();
 
 	@Override
 	public Class<?>[] getHandledClasses() {
@@ -29,6 +29,11 @@ public class XmlResultDisplayer implements ResultDisplayer {
 	@Override
 	public String[] getHandledMimeTypes() {
 		return new String[] { "text/xml" };
+	}
+
+	@Override
+	public boolean canRender(Class<?> resultClass, String mimeType) {
+		return false;
 	}
 
 	@Override

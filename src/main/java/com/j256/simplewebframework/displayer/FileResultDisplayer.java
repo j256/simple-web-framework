@@ -38,6 +38,11 @@ public class FileResultDisplayer implements ResultDisplayer {
 	}
 
 	@Override
+	public boolean canRender(Class<?> resultClass, String mimeType) {
+		return false;
+	}
+
+	@Override
 	public boolean renderResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
 			Object result) throws IOException {
 

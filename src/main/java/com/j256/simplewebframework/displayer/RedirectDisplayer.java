@@ -12,23 +12,16 @@ import org.eclipse.jetty.server.Request;
  * 
  * @author graywatson
  */
-public class RedirectDisplayer implements ResultDisplayer {
+public class RedirectDisplayer extends SingleClassResultDisplayer<RedirectResult> {
 
-	@Override
-	public Class<?>[] getHandledClasses() {
-		return new Class[] { RedirectResult.class };
+	public RedirectDisplayer() {
+		super(RedirectResult.class);
 	}
 
 	@Override
-	public String[] getHandledMimeTypes() {
-		return null;
-	}
-
-	@Override
-	public boolean renderResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
-			Object result) throws IOException {
-		RedirectResult redirectResult = (RedirectResult) result;
-		redirectResult.sendResponseRedirect(request, response);
+	protected boolean renderTypedResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
+			RedirectResult result) throws IOException {
+		result.sendResponseRedirect(request, response);
 		return true;
 	}
 }

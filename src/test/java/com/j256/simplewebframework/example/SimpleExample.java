@@ -45,6 +45,8 @@ public class SimpleExample {
 		server.setHandler(serviceHandler);
 		server.start();
 
+		System.out.println("Web-server running on port " + DEFAULT_WEB_PORT);
+
 		// keeps on running because of the jetty threads so you will need to kill it
 	}
 

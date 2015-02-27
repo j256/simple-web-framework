@@ -13,25 +13,18 @@ import org.eclipse.jetty.server.Request;
  * 
  * @author graywatson
  */
-public class StringResultDisplayer implements ResultDisplayer {
+public class StringResultDisplayer extends SingleClassResultDisplayer<String> {
 
-	@Override
-	public Class<?>[] getHandledClasses() {
-		return new Class[] { String.class };
+	public StringResultDisplayer() {
+		super(String.class);
 	}
 
 	@Override
-	public String[] getHandledMimeTypes() {
-		return null;
-	}
-
-	@Override
-	public boolean renderResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
-			Object result) throws IOException {
-		String str = (String) result;
-		response.setContentLength(str.length());
+	protected boolean renderTypedResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
+			String result) throws IOException {
+		response.setContentLength(result.length());
 		PrintWriter writer = response.getWriter();
-		writer.append(str);
+		writer.append(result);
 		writer.close();
 		return true;
 	}

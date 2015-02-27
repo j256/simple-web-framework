@@ -15,23 +15,16 @@ import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
  * 
  * @author graywatson
  */
-public class HttpErrorCodeResultDisplayer implements ResultDisplayer {
+public class HttpErrorCodeResultDisplayer extends SingleClassResultDisplayer<HttpErrorCode> {
 
-	@Override
-	public Class<?>[] getHandledClasses() {
-		return new Class[] { HttpErrorCode.class };
+	public HttpErrorCodeResultDisplayer() {
+		super(HttpErrorCode.class);
 	}
 
 	@Override
-	public String[] getHandledMimeTypes() {
-		return null;
-	}
-
-	@Override
-	public boolean renderResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
-			Object result) {
-		HttpErrorCode errorCode = (HttpErrorCode) result;
-		ResponseUtils.sendError(response, errorCode);
+	protected boolean renderTypedResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
+			HttpErrorCode result) {
+		ResponseUtils.sendError(response, result);
 		return true;
 	}
 }
