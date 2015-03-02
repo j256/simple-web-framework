@@ -19,6 +19,7 @@ import com.j256.simplewebframework.displayer.FileResultDisplayer;
 import com.j256.simplewebframework.displayer.ResultDisplayer;
 import com.j256.simplewebframework.displayer.StringResultDisplayer;
 import com.j256.simplewebframework.freemarker.FreemarkerHtmlDisplayer;
+import com.j256.simplewebframework.freemarker.ModelView;
 import com.j256.simplewebframework.handler.LoggingHandler;
 import com.j256.simplewebframework.handler.ServiceHandler;
 import com.j256.simplewebframework.resource.FileLocator;
@@ -110,28 +111,19 @@ public class FreemarkerExample {
 	@Produces({ "text/html" })
 	protected static class OurService {
 
-		@Path("/")
+		private static final String SERVICE_VIEW = "service.html";
+
+		@Path("/service")
 		@GET
 		@WebMethod
-		public String root(//
+		public ModelView root(//
 				@QueryParam("value")//
 				String value) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("<html><body>\n");
-			sb.append("<h1> OurService Web Server </h1>\n");
-			if (value != null) {
-				sb.append("<p> value is '" + value + "' </p>\n");
-			}
-			sb.append("<p><form>\n");
-			sb.append("Please enter value: <input name='value' type='text'");
-			if (value != null) {
-				sb.append(" value='").append(value).append("'");
-			}
-			sb.append(" />");
-			sb.append("<input type='submit' />\n");
-			sb.append("</form></p>\n");
-			sb.append("</body></html>\n");
-			return sb.toString();
+			// build our model for the view
+			Map<String, Object> model = new HashMap<String, Object>();
+			model.put("value", value);
+			// display our freemarker view
+			return new ModelView(model, SERVICE_VIEW);
 		}
 	}
 }

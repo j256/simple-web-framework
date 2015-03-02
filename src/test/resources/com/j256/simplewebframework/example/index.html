@@ -2,14 +2,16 @@
 <body>
 
 <h1> Hello World </h1>
-<img src="hello.jpg" />
+<img src="/hello.jpg" />
 
 <ul>
 <#-- little freemarker loop here to demonstrate that it is being processed -->
-<#list 1..5 as i>
-	<li> #${i} </li> 
+<#list 1..3 as i>
+	<li> #${i} -- Freemarker works </li> 
 </#list>  
 </ul>
+
+<p> Test a <a href="/service">little service</a>. </p>
 
 </body>
 </html>

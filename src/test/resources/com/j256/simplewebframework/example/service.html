@@ -1,0 +1,22 @@
+<html>
+<body>
+
+<h1> Little Web Service </h1>
+
+<#if value?? >
+	<p> value is '${value}' </p>
+</#if>
+
+<p><form>
+Please enter value: <input name='value' type='text'"
+<#if value?? >
+	value='${value}'
+</#if>
+	/>
+<input type='submit' />
+</form></p>
+
+<p> Go back to <a href='/' >root</a>. </p>
+
+</body>
+</html>
