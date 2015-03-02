@@ -45,6 +45,9 @@ public class JsonResultDisplayer implements ResultDisplayer {
 			Object result) throws IOException {
 		String userAgent = request.getHeader("User-Agent");
 		if (userAgent != null) {
+			/*
+			 * Unfortunately, the internets says that pre version 10, IE needs the json to be text/plain. Ugh.
+			 */
 			Matcher matcher = MSIE_PATTERN.matcher(userAgent);
 			if (matcher.matches()) {
 				try {

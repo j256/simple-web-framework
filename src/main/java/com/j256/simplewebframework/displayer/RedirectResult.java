@@ -15,19 +15,19 @@ import com.j256.simplewebframework.util.ResponseUtils;
  */
 public class RedirectResult {
 
-	private final String fullUrl;
-	private final String relativePath;
+	private final String uri;
+	private final boolean full;
 
-	private RedirectResult(String fullUrl, String relativePath) {
-		this.fullUrl = fullUrl;
-		this.relativePath = relativePath;
+	private RedirectResult(String uri, boolean full) {
+		this.uri = uri;
+		this.full = full;
 	}
 
 	/**
 	 * Create a redirect result with a full URL which includes home and path parts.
 	 */
 	public static RedirectResult withFullUrl(String fullUrl) {
-		return new RedirectResult(fullUrl, null);
+		return new RedirectResult(fullUrl, true);
 	}
 
 	/**
@@ -35,17 +35,17 @@ public class RedirectResult {
 	 * request.
 	 */
 	public static RedirectResult withRelativePath(String relativePath) {
-		return new RedirectResult(null, relativePath);
+		return new RedirectResult(relativePath, false);
 	}
 
 	/**
 	 * Send a redirect using this result.
 	 */
 	public void sendResponseRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if (fullUrl == null) {
-			ResponseUtils.sendRelativeRedirect(request, response, relativePath);
+		if (full) {
+			ResponseUtils.sendRedirect(response, uri);
 		} else {
-			ResponseUtils.sendRedirect(response, fullUrl);
+			ResponseUtils.sendRelativeRedirect(request, response, uri);
 		}
 	}
 }
