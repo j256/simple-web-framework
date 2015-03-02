@@ -4,15 +4,13 @@
 <h1> Little Web Service </h1>
 
 <#if value?? >
-	<p> value is '${value}' </p>
+<p> value is '${value}' </p>
+<#else>
+<p> No value specified. </p>
 </#if>
 
 <p><form>
-Please enter value: <input name='value' type='text'"
-<#if value?? >
-	value='${value}'
-</#if>
-	/>
+Please enter value: <input name='value' type='text'<#if value?? > value='${value}'</#if> />
 <input type='submit' />
 </form></p>
 
