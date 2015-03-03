@@ -141,8 +141,7 @@ public class ServiceHandler extends AbstractHandler {
 	 */
 	public void registerWebService(Object webService) {
 		if (!webService.getClass().isAnnotationPresent(WebService.class)) {
-			throw new IllegalArgumentException("Expected @WebService annotation on class "
-					+ webService.getClass().getSimpleName());
+			throw new IllegalArgumentException("Expected @WebService annotation on class " + webService.getClass());
 		}
 
 		String classPathPrefix = "";
