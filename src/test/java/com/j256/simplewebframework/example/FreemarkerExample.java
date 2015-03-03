@@ -30,7 +30,7 @@ import freemarker.template.Version;
 
 /**
  * Little sample program which uses the FreeMarker template language to display HTML. It starts a test web-server up on
- * port 8080 which demonstrates some static files as well as service objects supperted by the SimpleWebFramework.
+ * port 8080 which demonstrates some static files as well as service objects supported by the SimpleWebFramework.
  * 
  * @author graywatson
  */

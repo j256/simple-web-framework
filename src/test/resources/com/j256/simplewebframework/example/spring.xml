@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- test spring config file that shows off the support for the Spring Framework (an optional dependency) -->
+
+	<!-- web-server bean -->
+	<bean id="webServer" class="org.eclipse.jetty.server.Server" init-method="start" destroy-method="stop">
+		<!-- the port should probably come from a configured property -->
+		<property name="connectors">
+			<array>
+				<ref bean="selectChannelConnector" />
+			</array>
+		</property>
+		<property name="handler" ref="loggingHandler" />
+	</bean>
+
+	<!-- connector running on port 8080 -->
+	<bean id="selectChannelConnector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+		<property name="port" value="8080" />
+		<property name="reuseAddress" value="true" />
+	</bean>
+
+	<!-- displayer for freemarker template files -->
+	<bean id="freemarkerDisplayer" class="com.j256.simplewebframework.freemarker.FreemarkerHtmlDisplayer">
+		<property name="fileLocator" ref="fileLocator" />
+		<property name="templateConfig" ref="freemarkerConfiguration" />
+	</bean>
+
+	<!-- where the template files are located -->
+	<bean id="fileLocator" class="com.j256.simplewebframework.resource.FileLocator">
+		<property name="localDirectory" ref="templateDir" />
+		<property name="welcomeFiles">
+			<array>
+				<value>index.html</value>
+			</array>
+		</property>
+	</bean>
+
+	<!-- freemarker configuration info -->
+	<bean id="freemarkerConfiguration" class="freemarker.template.Configuration">
+		<constructor-arg index="0" type="freemarker.template.Version">
+			<bean class="freemarker.template.Version">
+				<constructor-arg index="0" type="java.lang.String" value="2.3.22" />
+			</bean>
+		</constructor-arg>
+		<property name="directoryForTemplateLoading" ref="templateDir" />
+	</bean>
+
+	<!-- directoru for our templates and other files -->
+	<bean id="templateDir" class="java.io.File">
+		<constructor-arg index="0" type="java.lang.String" value="src/test/resources/com/j256/simplewebframework/example" />
+	</bean>
+
+	<!-- handlers -->
+
+	<!-- logging handler which wraps everything -->
+	<bean id="loggingHandler" class="com.j256.simplewebframework.handler.LoggingHandler">
+		<property name="handler" ref="handlerCollection" />
+	</bean>
+
+	<!-- collection of handlers which does the work -->
+	<bean id="handlerCollection" class="org.eclipse.jetty.server.handler.HandlerCollection">
+		<property name="handlers">
+			<array>
+				<ref bean="serviceHandler" />
+				<ref bean="localResourceHandler" />
+			</array>
+		</property>
+	</bean>
+
+	<!-- service handler which handles the calls to service classes -->
+	<bean id="serviceHandler" class="com.j256.simplewebframework.handler.ServiceHandler">
+		<property name="webServices">
+			<array>
+				<bean class="com.j256.simplewebframework.example.SpringExample$OurService" />
+			</array>
+		</property>
+		<property name="resultDisplayers">
+			<array>
+				<bean class="com.j256.simplewebframework.displayer.StringResultDisplayer" />
+				<ref bean="freemarkerDisplayer" />
+			</array>
+		</property>
+	</bean>
+
+	<!-- local resource handler which returns images, etc. -->
+	<bean id="localResourceHandler" class="com.j256.simplewebframework.resource.LocalResourceHandler">
+		<property name="fileLocator" ref="fileLocator" />
+		<property name="fileExtensionDisplayers">
+			<map>
+				<entry key="html" value-ref="freemarkerDisplayer" />
+			</map>
+		</property>
+		<!-- displayer for all types not in the extension map above -->
+		<property name="defaultDisplayer">
+			<bean class="com.j256.simplewebframework.displayer.FileResultDisplayer" />
+		</property>
+	</bean>
+
+</beans>
