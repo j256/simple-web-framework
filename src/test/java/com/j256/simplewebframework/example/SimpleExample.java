@@ -24,10 +24,12 @@ public class SimpleExample {
 	/** default web port that we will server jetty results on */
 	private static final int DEFAULT_WEB_PORT = 8080;
 
+	private static Server server;
+
 	public static void main(String[] args) throws Exception {
 
 		// create jetty server
-		Server server = new Server();
+		server = new Server();
 		// create the connector which receives HTTPD connections
 		SelectChannelConnector connector = new SelectChannelConnector();
 		// start it on the default port
@@ -68,6 +70,7 @@ public class SimpleExample {
 		public String root(//
 				@QueryParam("value")//
 				String value) {
+			// we'll build the HTML result by hand
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><body>\n");
 			sb.append("<h1> OurService Web Server </h1>\n");
