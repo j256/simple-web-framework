@@ -30,6 +30,7 @@ public class ServiceHandlerTest {
 		HttpServletResponse response = createMock(HttpServletResponse.class);
 
 		expect(baseRequest.isHandled()).andReturn(false);
+		expect(request.getMethod()).andReturn("GET");
 		expect(request.getPathInfo()).andReturn("/");
 		expect(request.getParameter("bar")).andReturn("bar2");
 		expect(request.getParameter("baz")).andReturn(null);

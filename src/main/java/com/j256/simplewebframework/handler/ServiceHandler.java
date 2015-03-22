@@ -76,11 +76,6 @@ public class ServiceHandler extends AbstractHandler {
 			}
 		}
 
-		// ignore the request if it does not match @GET, @POST, etc.
-		if (!methodWrapper.isAllowedRequest(request)) {
-			return;
-		}
-
 		Object result;
 		try {
 			result = methodWrapper.processRequest(baseRequest, request, response);

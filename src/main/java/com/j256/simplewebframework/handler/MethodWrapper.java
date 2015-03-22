@@ -126,27 +126,12 @@ public class MethodWrapper {
 				requestTypes.add(RequestType.DELETE);
 			}
 		}
-		if (requestTypes.size() == 0) {
-			this.allowedRequestTypes = null;
+		if (requestTypes.isEmpty()) {
+			// if none specified then all are used
+			this.allowedRequestTypes = RequestType.values();
 		} else {
 			this.allowedRequestTypes = requestTypes.toArray(new RequestType[requestTypes.size()]);
 		}
-	}
-
-	/**
-	 * Return true if this HTTP method is allowed by this parameter. If the method specifies any of {@code @GET},
-	 * {@code @HEAD}, {@code @POST}, {@code @PUT}, and {@code @DELETE} then the HTTP method must match.
-	 */
-	public boolean isAllowedRequest(HttpServletRequest request) {
-		if (allowedRequestTypes == null) {
-			return true;
-		}
-		for (RequestType type : allowedRequestTypes) {
-			if (type.name().equals(request.getMethod())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public boolean isReturnsVoid() {
