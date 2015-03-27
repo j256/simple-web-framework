@@ -80,7 +80,7 @@ public class SimpleExample {
 			sb.append("<p><form>\n");
 			sb.append("Please enter value: <input name='value' type='text'");
 			if (value != null) {
-				sb.append(" value='").append(value).append("'");
+				sb.append(" value='").append(value).append('\'');
 			}
 			sb.append(" />");
 			sb.append("<input type='submit' />\n");

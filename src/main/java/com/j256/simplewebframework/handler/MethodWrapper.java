@@ -98,7 +98,7 @@ public class MethodWrapper {
 					break;
 				}
 				if (part.length() > 0) {
-					sb.append("/").append(part);
+					sb.append('/').append(part);
 				}
 			}
 			fullPath = sb.toString();
