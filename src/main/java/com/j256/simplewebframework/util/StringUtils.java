@@ -105,4 +105,11 @@ public class StringUtils {
 		}
 		return th.getMessage();
 	}
+
+	/**
+	 * Return true if the argument is null or has a 0 length.
+	 */
+	public static boolean isEmpty(CharSequence seq) {
+		return seq == null || seq.length() == 0;
+	}
 }
