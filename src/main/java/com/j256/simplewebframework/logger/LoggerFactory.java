@@ -89,10 +89,10 @@ public class LoggerFactory {
 		 * WARNING: Android log must be _before_ commons logging since Android provides commons logging but logging
 		 * messages are ignored that are sent there. Grrrrr.
 		 */
-		SLF4J("org.slf4j.LoggerFactory", "com.j256.simplewebframework.logger.Slf4jLoggingLog"),
-		COMMONS_LOGGING("org.apache.commons.logging.LogFactory", "com.j256.simplewebframework.logger.CommonsLoggingLog"),
-		LOG4J2("org.apache.logging.log4j.LogManager", "com.j256.simplewebframework.logger.Log4j2Log"),
-		LOG4J("org.apache.log4j.Logger", "com.j256.simplewebframework.logger.Log4jLog"),
+		SLF4J("org.slf4j.LoggerFactory", Slf4jLoggingLog.class.getName()),
+		COMMONS_LOGGING("org.apache.commons.logging.LogFactory", CommonsLoggingLog.class.getName()),
+		LOG4J2("org.apache.logging.log4j.LogManager", Log4j2Log.class.getName()),
+		LOG4J("org.apache.log4j.Logger", Log4jLog.class.getName()),
 		// this should always be at the end, arguments are unused
 		LOCAL(LocalLog.class.getName(), LocalLog.class.getName()) {
 			@Override
