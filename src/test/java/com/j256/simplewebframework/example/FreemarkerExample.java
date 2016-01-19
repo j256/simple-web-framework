@@ -80,7 +80,7 @@ public class FreemarkerExample {
 		displayerMap.put("html", htmlDisplayer);
 		resourceHandler.setFileExtensionDisplayers(displayerMap);
 		// everything else uses the file result displayer
-		resourceHandler.setDefaultDisplayer(new FileResultDisplayer());
+		resourceHandler.setDefaultResultDisplayer(new FileResultDisplayer());
 		resourceHandler.setFileLocator(fileLocator);
 
 		// a collection of handlers which are tried one after another

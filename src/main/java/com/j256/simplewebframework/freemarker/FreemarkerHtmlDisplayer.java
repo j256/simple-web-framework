@@ -19,6 +19,7 @@ import com.j256.simplewebframework.displayer.ResultDisplayer;
 import com.j256.simplewebframework.logger.Logger;
 import com.j256.simplewebframework.logger.LoggerFactory;
 import com.j256.simplewebframework.resource.FileLocator;
+import com.j256.simplewebframework.util.ResponseUtils;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -59,9 +60,19 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 		FileInfo fileInfo;
 		if (result instanceof ModelView) {
 			modelView = (ModelView) result;
-			fileInfo = fileLocator.findFile(modelView.getView());
+			String view = modelView.getView();
+			if (view.startsWith("redirect:")) {
+				String dest = view.substring(9);
+				if (dest.startsWith("http:") || dest.startsWith("https:")) {
+					ResponseUtils.sendRedirect(response, dest);
+				} else {
+					ResponseUtils.sendRelativeRedirect(request, response, dest);
+				}
+				return true;
+			}
+			fileInfo = fileLocator.findFile(view);
 			if (fileInfo == null) {
-				logger.error("template not found in path '{}'", modelView.getView());
+				logger.error("template not found in path '{}'", view);
 				return false;
 			}
 		} else if (result instanceof FileInfo) {

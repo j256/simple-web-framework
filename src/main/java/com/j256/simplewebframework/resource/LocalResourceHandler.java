@@ -27,7 +27,7 @@ import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 public class LocalResourceHandler extends AbstractHandler {
 
 	private Map<String, ResultDisplayer> fileExtensionDisplayers = new HashMap<String, ResultDisplayer>();
-	private ResultDisplayer defaultDisplayer;
+	private ResultDisplayer defaultResultDisplayer;
 
 	@JmxAttributeField(description = "Number of HEAD requests")
 	private int headRequestsCount = 0;
@@ -100,7 +100,7 @@ public class LocalResourceHandler extends AbstractHandler {
 
 		ResultDisplayer displayer = fileExtensionDisplayers.get(extension);
 		if (displayer == null) {
-			displayer = defaultDisplayer;
+			displayer = defaultResultDisplayer;
 			if (displayer == null) {
 				invalidPathsCount++;
 				ResponseUtils.sendError(servletResponse, HttpErrorCode.NOT_FOUND, "unknown file type");
@@ -133,8 +133,8 @@ public class LocalResourceHandler extends AbstractHandler {
 		this.fileExtensionDisplayers = fileExtensionDisplayers;
 	}
 
-	public void setDefaultDisplayer(ResultDisplayer defaultDisplayer) {
-		this.defaultDisplayer = defaultDisplayer;
+	public void setDefaultResultDisplayer(ResultDisplayer defaultResultDisplayer) {
+		this.defaultResultDisplayer = defaultResultDisplayer;
 	}
 
 	public void setFileLocator(FileLocator fileLocator) {

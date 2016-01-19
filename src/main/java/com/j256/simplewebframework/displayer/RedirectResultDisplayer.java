@@ -12,9 +12,9 @@ import org.eclipse.jetty.server.Request;
  * 
  * @author graywatson
  */
-public class RedirectDisplayer extends SingleClassResultDisplayer<RedirectResult> {
+public class RedirectResultDisplayer extends SingleClassResultDisplayer<RedirectResult> {
 
-	public RedirectDisplayer() {
+	public RedirectResultDisplayer() {
 		super(RedirectResult.class);
 	}
 
