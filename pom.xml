@@ -19,6 +19,57 @@
 		<connection>scm:git:ssh://git@github.com/j256/simplewebframework.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/j256/simplewebframework.git</developerConnection>
 	</scm>
+	<properties>
+		<!-- external package versions -->
+		<jetty-version>8.1.9.v20130131</jetty-version>
+		<jsr-api-version>1.1.1</jsr-api-version>
+		<simplejmx-version>1.12</simplejmx-version>
+		<joda-time-version>1.5</joda-time-version>
+
+		<!-- optional versions -->
+		<freemarker-version>2.3.22</freemarker-version>
+		<simple-xml-version>2.6.6</simple-xml-version>
+		<gson-version>1.7.2</gson-version>
+		<aws-version>1.3.22</aws-version>
+		<slf4j-version>1.7.2</slf4j-version>
+		<spring-version>3.1.0.RELEASE</spring-version>
+		<log4j-version>1.2.12</log4j-version>
+		<log4j2-version>2.0-beta4</log4j2-version>
+		<!-- test versions -->
+		<easymock-version>2.3</easymock-version>
+		<junit-version>4.8.1</junit-version>
+	</properties>
+	<developers>
+		<developer>
+			<id>gray</id>
+			<name>Gray Watson</name>
+			<url>http://256.com/gray/</url>
+			<organization>256.com</organization>
+			<organizationUrl>http://256.com/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</developer>
+	</developers>
+	<profiles>
+		<profile>
+			<id>st</id>
+			<distributionManagement>
+				<repository>
+					<id>sonatype-nexus-staging</id>
+					<name>Nexus Release Repository</name>
+					<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+				<snapshotRepository>
+					<id>sonatype-nexus-snapshots</id>
+					<name>Sonatype Nexus Snapshots</name>
+					<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 	<build>
 		<finalName>simplewebframework</finalName>
 		<resources>
@@ -61,26 +112,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<properties>
-		<!-- external package versions -->
-		<jetty-version>8.1.9.v20130131</jetty-version>
-		<jsr-api-version>1.1.1</jsr-api-version>
-		<simplejmx-version>1.9</simplejmx-version>
-		<joda-time-version>1.5</joda-time-version>
-
-		<!-- optional versions -->
-		<freemarker-version>2.3.22</freemarker-version>
-		<simple-xml-version>2.6.6</simple-xml-version>
-		<gson-version>1.7.2</gson-version>
-		<aws-version>1.3.22</aws-version>
-		<slf4j-version>1.7.2</slf4j-version>
-		<spring-version>3.1.0.RELEASE</spring-version>
-		<log4j-version>1.2.12</log4j-version>
-		<log4j2-version>2.0-beta4</log4j2-version>
-		<!-- test versions -->
-		<easymock-version>2.3</easymock-version>
-		<junit-version>4.8.1</junit-version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
