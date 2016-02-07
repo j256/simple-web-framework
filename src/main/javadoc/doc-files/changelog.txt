@@ -1,0 +1,3 @@
+0.1: 2/7/2016
+	* Initial public release to support iTunesJukeBox but using internally for a while.
+  
