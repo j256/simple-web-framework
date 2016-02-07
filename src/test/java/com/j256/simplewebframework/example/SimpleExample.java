@@ -74,7 +74,9 @@ public class SimpleExample {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><body>\n");
 			sb.append("<h1> OurService Web Server </h1>\n");
-			if (value != null) {
+			if (value == null) {
+				sb.append("<p> no value specified </p>\n");
+			} else {
 				sb.append("<p> value is '" + value + "' </p>\n");
 			}
 			sb.append("<p><form>\n");

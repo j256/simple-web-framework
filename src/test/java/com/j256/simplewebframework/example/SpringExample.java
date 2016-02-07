@@ -25,7 +25,6 @@ public class SpringExample {
 
 	private static final String[] SPRING_CONFIG_FILES =
 			new String[] { "classpath:/com/j256/simplewebframework/example/spring.xml" };
-	private ClassPathXmlApplicationContext mainContext;
 
 	public static void main(String[] args) throws Exception {
 		new SpringExample().doMain(args);
@@ -34,7 +33,7 @@ public class SpringExample {
 	private void doMain(String[] args) throws Exception {
 
 		// load our context
-		mainContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILES);
+		ClassPathXmlApplicationContext mainContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILES);
 		mainContext.registerShutdownHook();
 
 		System.out.println("web-server running probably on port 8080");
@@ -53,7 +52,7 @@ public class SpringExample {
 		@GET
 		@WebMethod
 		public ModelView root(//
-				@QueryParam("value")//
+				@QueryParam("value") //
 				String value) {
 			// build our model for the view
 			Map<String, Object> model = new HashMap<String, Object>();

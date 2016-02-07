@@ -93,7 +93,7 @@
 			</map>
 		</property>
 		<!-- displayer for all types not in the extension map above -->
-		<property name="defaultDisplayer">
+		<property name="defaultResultDisplayer">
 			<bean class="com.j256.simplewebframework.displayer.FileResultDisplayer" />
 		</property>
 	</bean>
