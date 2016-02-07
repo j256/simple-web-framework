@@ -11,7 +11,7 @@ import com.j256.simplewebframework.util.ResponseUtils.HttpErrorCode;
 /**
  * Displayer that handles a direct error code result. It is more typical for a method to return some other result and
  * set the error code directly using the
- * {@link ResponseUtils#send.sendError(HttpServletResponse, HttpErrorCode, String)} method.
+ * {@link ResponseUtils#sendError(HttpServletResponse, HttpErrorCode, String)} method.
  * 
  * @author graywatson
  */

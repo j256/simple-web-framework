@@ -3,8 +3,8 @@ package com.j256.simplewebframework.logger;
 import com.j256.simplewebframework.logger.Log.Level;
 
 /**
- * Class which wraps our {@link Log} interface and provides {} argument features like slf4j. It allows us to plug in
- * additional log systems if necessary.
+ * Class which wraps our Log interface and provides {} argument features like slf4j. It allows us to plug in additional
+ * log systems if necessary.
  * 
  * <p>
  * <b>NOTE:</b> We do the (msg, arg0), (msg, arg0, arg1), (msg, arg0, arg1, arg2), and (msg, argArray) patterns because

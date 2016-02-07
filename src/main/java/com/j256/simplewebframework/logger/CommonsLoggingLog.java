@@ -1,8 +1,7 @@
 package com.j256.simplewebframework.logger;
 
 /**
- * Class which implements our {@link com.j256.ormlite.logger.Log} interface by delegating to the Apache commons logging
- * classes.
+ * Class which implements our Log interface by delegating to the Apache commons logging classes.
  * 
  * @author graywatson
  */

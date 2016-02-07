@@ -14,9 +14,6 @@ import com.j256.simplewebframework.util.IOUtils;
 /**
  * Displayer that writes the data from a provided {@link Reader} to the response. The reader will be closed afterwards.
  * 
- * NOTE: we don't have to use a {@link BufferedReader} in this case because we will be reading from the reader in large
- * chunks.
- * 
  * @author graywatson
  */
 public class ReaderResultDisplayer extends SingleClassResultDisplayer<Reader> {
@@ -33,6 +30,7 @@ public class ReaderResultDisplayer extends SingleClassResultDisplayer<Reader> {
 		PrintWriter pw = null;
 		try {
 			pw = response.getWriter();
+			// we don't have to use a {@link BufferedReader} since we are reading in chunks
 			char[] buffer = new char[BUFFER_SIZE];
 			while (true) {
 				int numRead = result.read(buffer);

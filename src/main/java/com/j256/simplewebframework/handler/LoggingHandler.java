@@ -44,16 +44,16 @@ public class LoggingHandler extends HandlerWrapper {
 	};
 
 	/**
-	 * Send an error back to the response. This delegates to {@see ResponseUtils#sendError(HttpServletResponse,
-	 * HttpErrorCode, String)}.
+	 * Send an error back to the response. This delegates to
+	 * {@link ResponseUtils#sendError(HttpServletResponse, HttpErrorCode, String)}.
 	 */
 	public static void sendError(HttpServletResponse response, HttpErrorCode errorCode, String msg) {
 		ResponseUtils.sendError(response, errorCode, msg);
 	}
 
 	/**
-	 * Send an error back to the response. This delegates to {@see ResponseUtils#sendError(HttpServletResponse,
-	 * HttpErrorCode)}.
+	 * Send an error back to the response. This delegates to
+	 * {@link ResponseUtils#sendError(HttpServletResponse, HttpErrorCode)}.
 	 */
 	public static void sendError(HttpServletResponse response, HttpErrorCode errorCode) {
 		ResponseUtils.sendError(response, errorCode);

@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import com.j256.simplewebframework.util.StringUtils;
 
 /**
- * Class which implements our {@link Log} interface so we can bypass external logging classes if they are not available.
+ * Class which implements our Log interface so we can bypass external logging classes if they are not available.
  * 
  * <p>
  * You can set the log level by setting the System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, "trace"). Acceptable
@@ -151,8 +151,8 @@ public class LocalLog implements Log {
 			try {
 				levels = configureClassLevels(stream);
 			} catch (IOException e) {
-				System.err.println("IO exception reading the log properties file '" + LOCAL_LOG_PROPERTIES_FILE + "': "
-						+ e);
+				System.err.println(
+						"IO exception reading the log properties file '" + LOCAL_LOG_PROPERTIES_FILE + "': " + e);
 			} finally {
 				try {
 					stream.close();
