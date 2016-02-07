@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.j256.simplewebframework</groupId>
 	<artifactId>simplewebframework</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>SimpleWebFramework</name>
 	<description>Simple web framework</description>
@@ -86,6 +86,15 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<mavenExecutorId>forked-path</mavenExecutorId>
+					<useReleaseProfile>false</useReleaseProfile>
+					<arguments>-Psonatype-oss-release -DgpgPhase=${gpgPhase} -Dgpg.passphrase=${gpg.passphrase}</arguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
@@ -135,6 +144,24 @@
 					<additionalparam>-tag inheritDoc:X</additionalparam>
 					<excludePackageNames>
 					</excludePackageNames>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- j256 Releases (Code releases for j256.com) <j256@256.com> -->
+					<keyname>D3412AC1</keyname>
 				</configuration>
 			</plugin>
 		</plugins>
