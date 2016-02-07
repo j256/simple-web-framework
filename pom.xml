@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.j256.simplewebframework</groupId>
 	<artifactId>simplewebframework</artifactId>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>SimpleWebFramework</name>
 	<description>Simple web framework</description>
