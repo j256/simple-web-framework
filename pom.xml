@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.j256.simplewebframework</groupId>
 	<artifactId>simplewebframework</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>SimpleWebFramework</name>
 	<description>Simple web framework</description>
@@ -15,6 +15,11 @@
 			<name>ISC License</name>
 		</license>
 	</licenses>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 	<scm>
 		<url>https://github.com/j256/simplewebframework</url>
 		<connection>scm:git:ssh://git@github.com/j256/simplewebframework.git</connection>
@@ -166,6 +171,35 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<dependencies>
 		<dependency>
