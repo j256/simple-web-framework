@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.j256.simplewebframework</groupId>
 	<artifactId>simplewebframework</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>SimpleWebFramework</name>
 	<description>Simple web framework</description>
@@ -18,6 +18,7 @@
 		<url>https://github.com/j256/simplewebframework</url>
 		<connection>scm:git:ssh://git@github.com/j256/simplewebframework.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/j256/simplewebframework.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 	<properties>
 		<!-- external package versions -->
@@ -100,7 +101,6 @@
 					<execution>
 						<goals>
 							<goal>jar</goal>
-							<goal>test-jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -109,6 +109,33 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.9</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<showPackage>false</showPackage>
+							<additionalparam>-tag inheritDoc:X</additionalparam>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<showPackage>false</showPackage>
+					<bottom>
+						This documentation content is licensed by Gray Watson under the
+						&lt;a
+						href="http://creativecommons.org/licenses/by-sa/3.0/" &gt;Creative Commons Attribution-Share Alike 3.0 License.
+						&lt;/a&gt; </bottom>
+					<additionalparam>-tag inheritDoc:X</additionalparam>
+					<excludePackageNames>
+					</excludePackageNames>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
