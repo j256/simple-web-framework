@@ -33,6 +33,7 @@ import freemarker.template.TemplateException;
 public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 
 	private static final Logger logger = LoggerFactory.getLogger(FreemarkerHtmlDisplayer.class);
+	@SuppressWarnings("unused")
 	private static final Map<String, Object> readOnlyMap = new ReadOnlyMap();
 
 	private Configuration templateConfig;
@@ -54,7 +55,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 	}
 
 	@Override
-	public boolean renderResult(Request baseRequest, HttpServletRequest request, HttpServletResponse response,
+	public boolean renderResult(Request request, HttpServletRequest servletRequest, HttpServletResponse response,
 			Object result) throws IOException {
 		ModelView modelView;
 		FileInfo fileInfo;
@@ -66,7 +67,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 				if (dest.startsWith("http:") || dest.startsWith("https:")) {
 					ResponseUtils.sendRedirect(response, dest);
 				} else {
-					ResponseUtils.sendRelativeRedirect(request, response, dest);
+					ResponseUtils.sendRelativeRedirect(servletRequest, response, dest);
 				}
 				return true;
 			}
@@ -77,17 +78,17 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 			}
 		} else if (result instanceof FileInfo) {
 			fileInfo = (FileInfo) result;
-			// NOTE: does this really need to be a new hashmap every time?
-			modelView = new ModelView(readOnlyMap, fileInfo.getPath());
+			modelView = new ModelView(new HashMap<String, Object>(), fileInfo.getPath());
 		} else {
-			throw new IllegalArgumentException("Cannot render the result of type: " + result.getClass().getSimpleName());
+			throw new IllegalArgumentException(
+					"Cannot render the result of type: " + result.getClass().getSimpleName());
 		}
-		render(fileInfo, modelView.getModel(), request, response, response.getWriter());
+		render(fileInfo, modelView.getModel(), request, servletRequest, response, response.getWriter());
 		return true;
 	}
 
-	private boolean render(FileInfo fileInfo, Map<String, Object> model, HttpServletRequest servletRequest,
-			HttpServletResponse servletResponse, Writer writer) throws IOException {
+	private boolean render(FileInfo fileInfo, Map<String, Object> model, Request request,
+			HttpServletRequest servletRequest, HttpServletResponse servletResponse, Writer writer) throws IOException {
 
 		servletResponse.setContentType("text/html");
 
@@ -97,7 +98,8 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 			model = new HashMap<String, Object>();
 		}
 
-		model.put("request", servletRequest);
+		model.put("request", request);
+		model.put("servletRequest", servletRequest);
 
 		Template template;
 		try {
