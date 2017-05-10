@@ -14,6 +14,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import org.easymock.EasyMock;
 import org.eclipse.jetty.server.Request;
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ public class ServiceHandlerTest {
 		Service service = new Service();
 		handler.registerWebService(service);
 
-		Request baseRequest = org.easymock.classextension.EasyMock.createMock(Request.class);
+		Request baseRequest = EasyMock.createMock(Request.class);
 		HttpServletRequest request = createMock(HttpServletRequest.class);
 		HttpServletResponse response = createMock(HttpServletResponse.class);
 
@@ -38,10 +39,10 @@ public class ServiceHandlerTest {
 		expect(response.isCommitted()).andReturn(false).anyTimes();
 		baseRequest.setHandled(true);
 
-		org.easymock.classextension.EasyMock.replay(baseRequest);
+		EasyMock.replay(baseRequest);
 		replay(request, response);
 		handler.handle(null, baseRequest, request, response);
-		org.easymock.classextension.EasyMock.verify(baseRequest);
+		EasyMock.verify(baseRequest);
 		verify(request, response);
 	}
 
@@ -50,11 +51,11 @@ public class ServiceHandlerTest {
 		@Path("/")
 		@WebMethod
 		public void foo(//
-				@QueryParam("bar")//
-				String bar,//
-				@QueryParam("baz") @DefaultValue("100")//
-				int baz,//
-				@HeaderParam("Content-Length")//
+				@QueryParam("bar") //
+				String bar, //
+				@QueryParam("baz") @DefaultValue("100") //
+				int baz, //
+				@HeaderParam("Content-Length") //
 				int contentLength) {
 			System.out.println("foo(): bar = " + bar + ", baz = " + baz + ", len = " + contentLength);
 		}

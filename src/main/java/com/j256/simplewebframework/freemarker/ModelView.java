@@ -14,6 +14,7 @@ public class ModelView {
 	private final String view;
 
 	public ModelView(String view) {
+		// we do this in case the view needs to modify the map
 		this.model = new HashMap<String, Object>();
 		this.view = view;
 	}
@@ -26,7 +27,7 @@ public class ModelView {
 	public Map<String, Object> getModel() {
 		return model;
 	}
-	
+
 	public String getView() {
 		return view;
 	}
