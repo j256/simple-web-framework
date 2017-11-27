@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.j256.simplejmx.common.JmxAttributeField;
 import com.j256.simplejmx.common.JmxAttributeMethod;
 import com.j256.simplejmx.common.JmxOperation;
 import com.j256.simplejmx.common.JmxResource;
+import com.j256.simplewebframework.logger.Logger;
+import com.j256.simplewebframework.logger.LoggerFactory;
 import com.j256.simplewebframework.util.FileUtils;
 import com.j256.simplewebframework.util.IOUtils;
 
@@ -231,7 +230,7 @@ public class CmsManager {
 					logger.info("deleted old branch dir: {}", branchDir);
 				} catch (IOException e) {
 					// ignore it
-					logger.error("could not remove old branch dir: " + branchDir, e);
+					logger.error(e, "could not remove old branch dir: " + branchDir);
 				}
 			}
 		}
@@ -268,7 +267,7 @@ public class CmsManager {
 						logger.info("deleted old revision dir: {}", revisionDir);
 					} catch (IOException e) {
 						// ignore it
-						logger.error("could not remove old revision dir: " + revisionDir, e);
+						logger.error(e, "could not remove old revision dir: {}", revisionDir);
 					}
 				}
 			}
@@ -384,7 +383,7 @@ public class CmsManager {
 			logger.error(msg);
 			throw new IOException(msg);
 		} else {
-			logger.error(msg, e);
+			logger.error(e, msg);
 			throw new IOException(msg, e);
 		}
 	}

@@ -106,7 +106,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 			template = templateConfig.getTemplate(path);
 		} catch (IOException e) {
 			String msg = "problems getting template from path '" + path + "'";
-			logger.error(msg, e);
+			logger.error(e, msg);
 			throw new IOException(msg, e);
 		}
 
@@ -115,7 +115,7 @@ public class FreemarkerHtmlDisplayer implements ResultDisplayer {
 			return true;
 		} catch (TemplateException e) {
 			String msg = "could not render template in " + localFile;
-			logger.error(msg, e);
+			logger.error(e, msg);
 			throw new IOException(msg, e);
 		} finally {
 			// don't close it here
