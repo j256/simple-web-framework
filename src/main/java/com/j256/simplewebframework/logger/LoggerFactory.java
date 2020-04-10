@@ -92,7 +92,6 @@ public class LoggerFactory {
 		SLF4J("org.slf4j.LoggerFactory", Slf4jLoggingLog.class.getName()),
 		COMMONS_LOGGING("org.apache.commons.logging.LogFactory", CommonsLoggingLog.class.getName()),
 		LOG4J2("org.apache.logging.log4j.LogManager", Log4j2Log.class.getName()),
-		LOG4J("org.apache.log4j.Logger", Log4jLog.class.getName()),
 		// this should always be at the end, arguments are unused
 		LOCAL(LocalLog.class.getName(), LocalLog.class.getName()) {
 			@Override
